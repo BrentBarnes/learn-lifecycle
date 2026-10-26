@@ -1,0 +1,190 @@
+{
+ "frames": {
+  "lab_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_1": {
+   "frame": {
+    "x": 160,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_2": {
+   "frame": {
+    "x": 320,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_3": {
+   "frame": {
+    "x": 480,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_4": {
+   "frame": {
+    "x": 640,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_5": {
+   "frame": {
+    "x": 800,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_6": {
+   "frame": {
+    "x": 960,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  },
+  "lab_7": {
+   "frame": {
+    "x": 1120,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 160,
+    "h": 90
+   },
+   "duration": 167
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "lab.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 90
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "lab",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

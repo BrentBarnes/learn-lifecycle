@@ -1,0 +1,15 @@
+name: Feedback
+description: What worked, what didn't
+labels: [feedback]
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What did you think?
+      placeholder: Which part you played, what clicked, what confused you.
+    validations: { required: true }
+  - type: dropdown
+    id: role
+    attributes:
+      label: You are… (optional)
+      options: [Working in lifecycle or email marketing, Learning it, In marketing but not lifecycle, A developer, Something else]

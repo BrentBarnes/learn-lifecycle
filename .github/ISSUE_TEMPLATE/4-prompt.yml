@@ -1,0 +1,33 @@
+name: Prompt request
+description: A prompt for an AI coding agent that would make a change. I choose whether to run it.
+labels: [prompt]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write the prompt you'd give Claude Code, Codex or Cursor to make one change. I read every one and choose whether to run it. See CONTRIBUTING.md for what makes a good one.
+  - type: input
+    id: change
+    attributes:
+      label: The change, in one line
+      placeholder: Add a Level 2 step on reading a change log with two changes on the same day
+    validations: { required: true }
+  - type: textarea
+    id: prompt
+    attributes:
+      label: The prompt
+      render: markdown
+    validations: { required: true }
+  - type: textarea
+    id: check
+    attributes:
+      label: How to check it worked
+      placeholder: The new step shows after 2s3; its reps pass after 4 of the last 5 right.
+    validations: { required: true }
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: The game's rules
+      options:
+        - label: It uses made-up numbers and people only, and needs no AI calls or accounts
+          required: true

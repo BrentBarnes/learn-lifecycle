@@ -1,0 +1,106 @@
+{
+ "frames": {
+  "walk_brad_side_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 18,
+    "h": 27
+   },
+   "duration": 125
+  },
+  "walk_brad_side_1": {
+   "frame": {
+    "x": 18,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 18,
+    "h": 27
+   },
+   "duration": 125
+  },
+  "walk_brad_side_2": {
+   "frame": {
+    "x": 36,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 18,
+    "h": 27
+   },
+   "duration": 125
+  },
+  "walk_brad_side_3": {
+   "frame": {
+    "x": 54,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 18,
+    "h": 27
+   },
+   "duration": 125
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "walk_brad_side.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 72,
+   "h": 27
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "walk_brad_side",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   }
+  ]
+ }
+}

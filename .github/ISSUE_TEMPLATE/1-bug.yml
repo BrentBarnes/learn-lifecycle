@@ -1,0 +1,21 @@
+name: Bug
+description: Something broke or looks wrong
+labels: [bug]
+body:
+  - type: dropdown
+    id: game
+    attributes:
+      label: Where
+      options: [The office, Lifecycle Files, The Test Board, Frank's SQL desk, The home page, Not sure]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      placeholder: "Level 1, step 'Single days': I pressed Enter after a right answer and the next rep didn't load."
+    validations: { required: true }
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Chrome on a Mac, Safari on an iPhone…

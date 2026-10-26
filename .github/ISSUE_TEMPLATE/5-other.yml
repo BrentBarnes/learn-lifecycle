@@ -1,0 +1,9 @@
+name: Something else
+description: Anything that isn't a bug, idea or feedback
+labels: [other]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What's on your mind?
+    validations: { required: true }

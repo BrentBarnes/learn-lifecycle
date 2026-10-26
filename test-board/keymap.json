@@ -1,0 +1,22 @@
+{
+  "about": "One keymap for the Test Board game, Lifecycle Files and (later) the Chrome extension for the real tools. Letters open things you look at. Numbers make calls and are game-only. Research: games/test-board-game/research/v2/05-keybinds-and-extension.md. Lifecycle Files still keeps its own KEYS table; move it here when convenient.",
+  "version": 1,
+  "keys": [
+    {"key": "O", "label": "Overview", "what": "the plan: hypothesis, goal metric, read date", "unit": "U6", "growthbook": {"hash": "#overview"}, "prompts": ["Theo: when were we supposed to read this?", "Which metric did the plan say decides it?", "Check the hypothesis"]},
+    {"key": "A", "label": "A/B results", "what": "the results table", "unit": "U6", "growthbook": {"hash": "#results"}, "prompts": ["Open the numbers", "What's the chance to win?", "Did the guardrails hold?"]},
+    {"key": "H", "label": "Health", "what": "is the split even?", "unit": "U7", "growthbook": {"hash": "#health"}, "prompts": ["Is the split even?", "Marcus: can we trust this one?", "Check the sample ratio"]},
+    {"key": "R", "label": "Experiments", "what": "every test in the program (GrowthBook's list)", "unit": "U2", "growthbook": {"path": "/experiments"}},
+    {"key": "W", "label": "Board", "what": "which test runs in which week", "unit": "U2", "growthbook": {"path": "/timeline"}},
+    {"key": "G", "label": "Guardrails", "what": "the guardrail rows", "unit": "U6"},
+    {"key": "P", "label": "Power", "what": "size a test", "unit": "U9", "growthbook": {"path": "/power-calculator"}},
+    {"key": "I", "label": "Ideas", "what": "the idea inbox", "unit": "U13", "growthbook": {"path": "/ideas"}}
+  ],
+  "game_only": [
+    {"key": "1-5", "label": "make the call"},
+    {"key": "Enter", "label": "next"},
+    {"key": "N", "label": "next Monday (Run the quarter)"},
+    {"key": "L", "label": "the map (Lifecycle Files: the level path)"},
+    {"key": "?", "label": "show every key (a Right Ctrl tap works too)"},
+    {"key": "Esc", "label": "close (Lifecycle Files uses Q: Vimium takes Esc while a text box has focus, and that game keeps an invisible one focused)"}
+  ]
+}

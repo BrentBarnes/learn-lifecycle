@@ -1,0 +1,70 @@
+/* The office's desk themes (desk.mjs). The tool screens stay the tool: Lifecycle Files' dashboards and Test Board's
+   GrowthBook pages keep their own layout and colors, framed as a monitor in the room. What changes is the room
+   around them and the tutorial windows, which take the narrator's portrait. */
+@import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
+:root.desk{--desk-pix:"Silkscreen","Inter",monospace}
+
+/* ---------- the desk bar: the room, the narrator, the buttons ---------- */
+.deskbar{display:grid;grid-template-columns:240px 1fr auto;gap:16px;align-items:center;padding:12px 18px;margin:0;border-bottom:4px solid var(--desk-edge);background:var(--desk-bar);color:var(--desk-bar-ink)}
+.deskbar .dscene{width:240px;height:135px;image-rendering:pixelated;border:3px solid var(--desk-edge);box-shadow:4px 4px 0 #0006;border-radius:2px;background:#000}
+.dplate{min-width:0;display:flex;flex-direction:column;gap:6px}
+.droom{font:13px var(--desk-pix);letter-spacing:.06em;color:var(--desk-hi);text-transform:uppercase}
+.dwho{display:flex;align-items:center;gap:8px}.dwho img{image-rendering:pixelated;width:42px;height:42px;border:2px solid var(--desk-edge);border-radius:4px;background:var(--desk-face-bg)}
+.dwho b{font:14px var(--desk-pix)}.dwho small{opacity:.7;font-size:12px}
+.dline{font-size:14px;line-height:1.45;max-width:640px}
+.dstep{font-size:12.5px;opacity:.85}.dstep b{color:var(--desk-hi)}
+.dbtns{display:flex;flex-direction:column;gap:8px}
+.dbtns button{font:12px var(--desk-pix);letter-spacing:.03em;background:var(--desk-btn);color:var(--desk-bar-ink);border:2px solid var(--desk-edge);border-radius:4px;padding:7px 10px;cursor:pointer;box-shadow:3px 3px 0 #0005;text-align:left}
+.dbtns button:hover{border-color:var(--desk-hi)}.dbtns button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0005}
+.dbtns kbd{font:11px var(--f-mono,monospace);background:#0003;border-radius:3px;padding:0 4px;margin-left:4px}
+@media (max-width:760px){.deskbar{grid-template-columns:1fr}.deskbar .dscene{width:100%;height:auto;aspect-ratio:16/9}.dbtns{flex-direction:row}}
+
+
+/* ---------- Analytics: Priya's signal room (Lifecycle Files) ---------- */
+:root.desk-signal{--desk-bar:#101827;--desk-bar-ink:#d9e4f2;--desk-edge:#2e3f5e;--desk-hi:#5fd3b2;--desk-btn:#172238;--desk-face-bg:#22304a}
+:root.desk-signal body{background:#0b1220 repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 3px)}
+/* the game sits on the big monitor: a bezel, a status light */
+:root.desk-signal body > main{margin:18px auto 40px;background:var(--bg);border:10px solid #2e3f5e;border-radius:10px;box-shadow:0 0 0 2px #0a121c,0 0 40px #5fd3b222;position:relative}
+:root.desk-signal body > main::after{content:"";position:absolute;right:14px;bottom:-8px;width:6px;height:6px;border-radius:50%;background:#5fd3b2;box-shadow:0 0 6px #5fd3b2}
+/* the coach bar is Priya talking you through it */
+:root.desk-signal .guide{background:#101827;border:3px solid #2e3f5e;border-radius:6px;box-shadow:5px 5px 0 #0a121c55;color:#e6eef8}
+:root.desk-signal .guide b{color:#5fd3b2;opacity:1;font-family:var(--desk-pix);letter-spacing:.05em}
+:root.desk-signal .pguide.hand{background:#eef8f5;color:var(--ink);border:3px solid #5fd3b2}
+:root.desk-signal .pguide.hand b{color:#1d7a63}
+:root.desk-signal .guide,:root.desk-signal .meet{position:relative}
+:root.desk-signal .guide{padding-left:66px}
+:root.desk-signal .guide::before,:root.desk-signal .meet::before{content:"";position:absolute;left:10px;top:50%;transform:translateY(-50%);width:44px;height:44px;background:var(--desk-face) center/42px 42px no-repeat #22304a;image-rendering:pixelated;border:2px solid #2e3f5e;border-radius:4px}
+/* the person asking is a speech bubble */
+:root.desk-signal .sym{border:3px solid #2e3f5e;border-left-width:3px;border-radius:6px;box-shadow:4px 4px 0 #0a121c33}
+/* the Meet card is a window with Priya at the top */
+:root.desk-signal .meet{border:3px solid #2e3f5e;border-radius:8px;box-shadow:6px 6px 0 #0a121c44;padding-top:70px}
+:root.desk-signal .meet::before{top:14px;transform:none;left:24px}
+:root.desk-signal .meet::after{content:"Priya · Analyst";position:absolute;left:78px;top:28px;font:12px var(--desk-pix);color:#1d7a63;letter-spacing:.04em}
+/* dashboards keep their look, framed like screens on the wall */
+:root.desk-signal .card.pmain{border:2px solid #c9d3e0;box-shadow:0 0 0 4px #e9eef5}
+
+/* ---------- Testing: Mei's A/B lab (Test Board) ---------- */
+:root.desk-lab{--desk-bar:#fbfbf7;--desk-bar-ink:#1f2d5c;--desk-edge:#9aa3ad;--desk-hi:#e0873a;--desk-btn:#eef3f0;--desk-face-bg:#e6f1ec}
+:root.desk-lab body{background:#e6f1ec;background-image:linear-gradient(#cfe3da 1px,transparent 1px),linear-gradient(90deg,#cfe3da 1px,transparent 1px);background-size:32px 32px}
+:root.desk-lab .deskbar{background:#fbfbf7;border-bottom-color:#9aa3ad}
+/* the GrowthBook screen is on the lab's monitor: a steel bezel */
+:root.desk-lab .main{margin:18px clamp(8px,2vw,24px) 40px;background:var(--bg);border:10px solid #b9c1c9;border-radius:10px;box-shadow:0 0 0 2px #7f8a96,6px 8px 0 #7f8a9633}
+/* Mei's notes: ruled notebook paper with her portrait */
+:root.desk-lab .brief,:root.desk-lab .hint,:root.desk-lab .lesson .lp{position:relative;padding-left:66px;min-height:62px;background:#fbf8ec repeating-linear-gradient(0deg,transparent 0 23px,#e2dcc4 23px 24px);border:2px solid #d9cfb2;border-left:4px solid #e0873a;border-radius:4px;box-shadow:3px 3px 0 #d9cfb266;color:#2b2a24}
+:root.desk-lab .brief::before,:root.desk-lab .hint::before,:root.desk-lab .lesson .lp::before{content:"";position:absolute;left:10px;top:10px;width:44px;height:44px;background:var(--desk-face) center/42px 42px no-repeat #e6f1ec;image-rendering:pixelated;border:2px solid #9aa3ad;border-radius:4px}
+:root.desk-lab .brief .bk{font-family:var(--desk-pix);color:#b8662a}
+:root.desk-lab .brief .bk::before{content:"Mei's notes · "}
+:root.desk-lab .hint b{color:#b8662a}
+:root.desk-lab .lesson .lp{padding:12px 14px 12px 66px}
+/* the question being asked is a sticky note */
+:root.desk-lab .gq.sq{background:#fff3c4;border:2px solid #e8d48a;border-radius:3px;padding:8px 12px;box-shadow:3px 3px 0 #e8d48a88;transform:rotate(-.3deg)}
+:root.desk-lab .hud{border-radius:6px;box-shadow:3px 3px 0 #1f2d5c33}
+
+/* ---------- the popped-out window ---------- */
+:root.desk-pip body{margin:0;background:var(--desk-bar,#fff);min-height:100vh}
+:root.desk-pip .deskbar{display:none}
+.pipwrap{padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.piphead{font:12px var(--desk-pix,"Silkscreen",monospace);letter-spacing:.06em;color:var(--desk-hi,#555);text-transform:uppercase}
+#pipbox{display:flex;flex-direction:column;gap:10px}
+#pipbox > *{margin:0!important;position:relative!important;top:auto!important;max-width:none!important}
+.pipnone{color:var(--desk-bar-ink,#555);opacity:.7;font-size:13px}

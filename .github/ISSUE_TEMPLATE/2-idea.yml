@@ -1,0 +1,14 @@
+name: Feature idea
+description: Something the game should do
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like the game to do?
+    validations: { required: true }
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help? (optional)
+      placeholder: What you'd learn, or what got in your way without it.
