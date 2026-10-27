@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Help build Lifecycle Practice</title><link rel="icon" href="/px/sprites/face_dana_smile.png">
+<meta name="description" content="Help build Lifecycle Practice, free games that teach lifecycle and email marketing. Bring a story, an idea, an afternoon or a weekend. Most ways in need no coding.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Silkscreen&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+/* Fernhill Coffee Co. colors: cream paper, dark roast ink, the plants' green, a crema accent */
+:root{--bg:#f6efe4;--bg2:#efe5d6;--card:#fffcf7;--ink:#2a1f17;--ink2:#4a3b2f;--muted:#7a6a5c;--line:#e3d6c3;--accent:#2f6b4f;--accent-ink:#fff;--accent-soft:#e2efe7;
+  --crema:#c8743a;--wood:#5b3a22;--code:#f0e7da;--term:#231a14;--term-ink:#eadfcf;--shadow:0 1px 2px #2a1f170f,0 8px 24px #2a1f1712;--shadow-lg:0 2px 6px #2a1f1714,0 22px 50px #2a1f1726}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16110d;--bg2:#1d1712;--card:#221b15;--ink:#f2e9dc;--ink2:#d8cbbb;--muted:#a8998a;--line:#3a2f26;--accent:#6fc39a;--accent-ink:#10251a;--accent-soft:#1f3328;
+  --crema:#e39a5f;--wood:#7a5235;--code:#2b231c;--term:#0f0b08;--term-ink:#eadfcf;--shadow:0 1px 2px #0006,0 8px 24px #0005;--shadow-lg:0 2px 6px #0007,0 22px 50px #0008}}
+:root[data-theme="dark"]{--bg:#16110d;--bg2:#1d1712;--card:#221b15;--ink:#f2e9dc;--ink2:#d8cbbb;--muted:#a8998a;--line:#3a2f26;--accent:#6fc39a;--accent-ink:#10251a;--accent-soft:#1f3328;
+  --crema:#e39a5f;--wood:#7a5235;--code:#2b231c;--term:#0f0b08;--term-ink:#eadfcf;--shadow:0 1px 2px #0006,0 8px 24px #0005;--shadow-lg:0 2px 6px #0007,0 22px 50px #0008}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:22px 22px;background-attachment:fixed}
+a{color:var(--accent);text-underline-offset:3px}
+img.px,.px{image-rendering:pixelated}
+:focus-visible{outline:3px solid var(--crema);outline-offset:3px;border-radius:6px}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+.kick{font:400 12px/1 Silkscreen,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--crema);margin:0 0 12px}
+h1,h2,h3{letter-spacing:-.02em;margin:0}
+h2{font-size:clamp(26px,3.4vw,34px);line-height:1.15;font-weight:800}
+.sub{color:var(--muted);font-size:17.5px;margin:10px 0 0;max-width:600px}
+section{padding:72px 0 0}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:22px;padding:16px 0;font-size:14.5px;font-weight:600}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:800;letter-spacing:-.01em}
+.brand img{width:30px;height:30px;border-radius:8px;background:var(--code)}
+.top nav{display:flex;gap:18px;flex-wrap:wrap}.top nav a{color:var(--muted);text-decoration:none}.top nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:44px;align-items:center;padding:44px 0 8px}
+.hero h1{font-size:clamp(36px,5.2vw,56px);line-height:1.04;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--accent);background:linear-gradient(transparent 62%,var(--accent-soft) 62%)}
+.hero .lede{font-size:18.5px;color:var(--ink2);margin:18px 0 26px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 15.5px Inter,system-ui,sans-serif;border:2px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:12px;padding:11px 18px;cursor:pointer;text-decoration:none;box-shadow:0 2px 0 var(--line);transition:transform .12s,box-shadow .12s,border-color .12s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 0 var(--line);border-color:var(--ink2)}
+.btn:active{transform:translateY(1px);box-shadow:0 0 0 var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.btn.primary:hover{box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.sm{font-size:14.5px;padding:8px 14px;border-radius:10px}
+.scene{position:relative}
+.scene .frame{border:6px solid var(--wood);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg);background:var(--wood);transform:rotate(1.2deg)}
+.scene .frame img{display:block;width:100%;height:auto}
+.bubble{position:absolute;left:-26px;bottom:-26px;max-width:250px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:14px;padding:10px 14px 10px 62px;
+  font-size:14.5px;line-height:1.4;box-shadow:5px 5px 0 var(--ink);transform:rotate(-1.5deg)}
+.bubble img{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:8px;background:var(--code)}
+.bubble b{display:block;font:400 11px Silkscreen,monospace;color:var(--crema);letter-spacing:.06em}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin:64px 0 0;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.stats div{padding:18px 20px;border-left:1px solid var(--line)}.stats div:first-child{border-left:0}
+.stats b{display:block;font:400 26px/1.1 Silkscreen,monospace;color:var(--ink)}
+.stats span{font-size:13.5px;color:var(--muted)}
+
+/* four ways in */
+.ways{display:flex;flex-direction:column;gap:18px;margin-top:30px;position:relative}
+.way{position:relative;display:grid;grid-template-columns:76px minmax(0,1fr);gap:20px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px 26px;box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s,border-color .15s}
+.way:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.way .face{position:relative;width:76px;height:76px}
+.way .face img{width:76px;height:76px;border-radius:16px;background:var(--bg2);border:2px solid var(--line)}
+.way .n{position:absolute;right:-8px;bottom:-8px;width:30px;height:30px;border-radius:50%;background:var(--crema);color:#fff;border:3px solid var(--card);display:grid;place-items:center;font:400 13px Silkscreen,monospace}
+.way h3{font-size:22px;font-weight:800}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:6px 0 10px;color:var(--muted);font-size:14px}
+.beans{display:inline-flex;gap:3px;align-items:center}.beans svg{width:13px;height:17px;color:var(--crema)}.beans svg.off{opacity:.22}
+.chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 10px}
+.way p{margin:0 0 10px;color:var(--ink2)}
+.way ul{margin:4px 0 12px;padding:0;list-style:none;display:grid;gap:8px}
+.way ul li{position:relative;padding-left:26px;color:var(--ink2)}
+.way ul li::before{content:"";position:absolute;left:4px;top:8px;width:10px;height:10px;background:var(--crema);box-shadow:3px 3px 0 color-mix(in srgb,var(--crema) 40%,transparent)}
+.acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.textlink{font-weight:700;text-decoration:none}.textlink:hover{text-decoration:underline}
+
+/* the prompt template */
+.tpl[hidden]{display:none}
+.tpl{margin-top:20px;padding:22px;border-radius:16px;background:var(--bg2);border:1px dashed var(--line);display:flex;flex-direction:column;gap:16px}
+.tpl .hint{margin:0;font-size:14.5px;color:var(--ink2);display:flex;gap:10px;align-items:flex-start}
+.tpl .hint::before{content:"i";flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 13px/22px Inter,sans-serif;text-align:center}
+.tpl fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.tpl legend,.fld>span{font-weight:700;font-size:15px;padding:0;margin-bottom:8px}
+.tpl small{font-weight:400;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:inline-flex;gap:6px;align-items:center;border:2px solid var(--line);border-radius:999px;padding:6px 13px;font-size:14px;font-weight:500;cursor:pointer;background:var(--card);transition:border-color .12s,background .12s}
+.chips label:hover{border-color:var(--ink2)}
+.chips label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.chips input{position:absolute;opacity:0;pointer-events:none}.chips label:focus-within{outline:3px solid var(--crema);outline-offset:2px}
+.fld{display:flex;flex-direction:column}
+.tpl input[type=text],.tpl textarea{font:400 15px/1.5 Inter,system-ui,sans-serif;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.tpl input[type=text]:focus,.tpl textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.tpl ::placeholder{color:color-mix(in srgb,var(--muted) 75%,transparent)}
+.tpl details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14.5px}
+.tpl pre{white-space:pre-wrap;margin:10px 0 0;background:var(--term);color:var(--term-ink);border-radius:12px;padding:14px 16px;font:13.5px/1.6 "JetBrains Mono",monospace}
+#tplmsg{font-size:14.5px;font-weight:600}#tplmsg.ok{color:var(--accent)}#tplmsg.err{color:#c0392b}
+.fine{font-size:13px;color:var(--muted);margin:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px}
+
+/* story to level */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px;position:relative}
+.flow::before{content:"";position:absolute;left:12%;right:12%;top:46px;border-top:3px dashed var(--line)}
+.step{position:relative;text-align:center;padding:0 8px}
+.step .pic{position:relative;width:92px;height:92px;margin:0 auto 14px;border-radius:22px;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;box-shadow:var(--shadow)}
+.step .pic img{width:64px;height:64px}
+.step .pic i{position:absolute;top:-10px;right:-10px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--bg);font:400 12px/28px Silkscreen,monospace;font-style:normal}
+.step h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.step p{margin:0;color:var(--ink2);font-size:15px}
+.credit{display:inline-block;margin-top:10px;font:600 22px/1 Caveat,cursive;color:var(--crema);transform:rotate(-3deg)}
+
+/* what's next */
+.board{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;margin-top:28px;padding:26px 28px;border-radius:20px;color:var(--ink);
+  background:repeating-linear-gradient(45deg,transparent 0 12px,color-mix(in srgb,var(--crema) 7%,transparent) 12px 24px),var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.board p{margin:6px 0 0;color:var(--ink2)}
+.board h3{font-size:20px;font-weight:800}
+
+/* for builders */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:30px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.panel.wide{grid-column:1/-1}
+.panel h3{font-size:19px;font-weight:800;margin-bottom:6px}
+.panel p{margin:0 0 12px;color:var(--ink2);font-size:15.5px}
+.term{position:relative;background:var(--term);color:var(--term-ink);border-radius:14px;padding:38px 16px 16px;font:14px/1.7 "JetBrains Mono",monospace;overflow-x:auto;margin:12px 0}
+.term::before{content:"";position:absolute;left:14px;top:14px;width:10px;height:10px;border-radius:50%;background:#e0604f;box-shadow:16px 0 #e3b341,32px 0 #57b36b}
+.term code{white-space:pre-wrap;overflow-wrap:anywhere;display:block}.term .c{color:#9b8b7a}
+.copy{position:absolute;right:10px;top:8px;font:600 12px Inter,sans-serif;color:var(--term-ink);background:#ffffff14;border:1px solid #ffffff26;border-radius:8px;padding:4px 10px;cursor:pointer}
+.copy:hover{background:#ffffff26}
+.links{display:grid;gap:10px;margin-top:6px}
+.links a{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);text-decoration:none;color:var(--ink);transition:border-color .12s,transform .12s}
+.links a:hover{border-color:var(--accent);transform:translateX(3px)}
+.links b{font-size:14.5px}.links code{font:12.5px/1.45 "JetBrains Mono",monospace;color:var(--accent);overflow-wrap:anywhere}
+.links span{color:var(--muted);font-weight:700}
+code.inl{font:13.5px "JetBrains Mono",monospace;background:var(--code);padding:2px 7px;border-radius:6px}
+
+/* house rules */
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:30px}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.rule i{display:block;font:400 22px/1 Silkscreen,monospace;font-style:normal;color:var(--crema);margin-bottom:10px}
+.rule b{display:block;font-size:16px;margin-bottom:4px}
+.rule span{color:var(--ink2);font-size:14.5px}
+
+/* closing band */
+.band{position:relative;margin:84px 0 0;border-radius:26px;overflow:hidden;color:#fbf3e7;box-shadow:var(--shadow-lg);background:#1b130d}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}
+.band::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1b130dee 0%,#1b130daa 55%,#1b130d55 100%)}
+.band .in{position:relative;z-index:1;padding:54px 44px;max-width:620px}
+.band h2{color:#fff}.band p{color:#e8dccb;font-size:17.5px;margin:12px 0 24px}
+.band .kick{color:#f0b37e}
+.band .btn{border-color:#ffffff40;background:#ffffff14;color:#fff;box-shadow:none}.band .btn:hover{border-color:#fff}
+.band .btn.primary{background:#6fc39a;border-color:#6fc39a;color:#10251a}
+
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:var(--muted);font-size:13.5px;padding:40px 0 48px}footer a{color:inherit}
+
+/* the Fernhill crew in their office, along both sides on wide screens */
+.rail{position:fixed;top:50%;transform:translateY(-50%);width:210px;height:576px;display:none;flex-direction:column;justify-content:space-evenly;align-items:center;pointer-events:none;
+  background:url(/px/scenes/office.png) 0 0/960px 576px no-repeat;image-rendering:pixelated;border:5px solid var(--wood);border-radius:18px;box-shadow:var(--shadow-lg);overflow:hidden}
+.rail.l{left:calc(50% - 470px - 250px)}.rail.r{right:calc(50% - 470px - 250px);background-position:-750px 0}
+.who{display:flex;flex-direction:column;align-items:center;gap:6px}
+.who i{display:block;width:72px;height:108px;background-repeat:no-repeat;background-size:288px 108px;image-rendering:pixelated;animation:bob 3.2s ease-in-out infinite}
+.who:nth-child(2) i{animation-delay:-1.1s}.who:nth-child(3) i{animation-delay:-2.2s}
+.who span{font:400 10px/1.2 Silkscreen,monospace;letter-spacing:.06em;text-transform:uppercase;color:#3b2a1c;text-align:center;background:#fff8ecee;border:2px solid #5b3a22;border-radius:6px;padding:3px 7px}
+.who span small{display:block;font:400 11px/1.3 Inter,sans-serif;letter-spacing:0;text-transform:none;color:#6b5440}
+.who .dog{width:96px;height:64px;background-size:384px 64px;animation:dog 1s steps(4) infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes dog{to{background-position:-384px 0}}
+@media (min-width:1460px) and (min-height:640px){.rail{display:flex}}
+
+/* entrance */
+.rise{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}.rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;gap:56px}.scene{max-width:520px}
+  .stats{grid-template-columns:repeat(2,1fr)}.stats div:nth-child(3){border-left:0}.stats div:nth-child(n+3){border-top:1px solid var(--line)}
+  .flow{grid-template-columns:1fr;gap:28px}.flow::before{display:none}
+  .grid2,.rules{grid-template-columns:1fr}
+  .board{grid-template-columns:1fr}
+  .links a{grid-template-columns:1fr auto}.links b{grid-column:1/-1}
+}
+@media (max-width:560px){
+  body{font-size:16px}.wrap{padding:0 16px}section{padding-top:56px}
+  .top nav{display:none}
+  .way{grid-template-columns:1fr;padding:20px}.way .face,.way .face img{width:60px;height:60px}
+  .bubble{left:8px;right:8px;bottom:-40px;max-width:none}
+  .band .in{padding:40px 24px}
+  .tpl{padding:16px}
+}
+</style></head>
+<body>
+<div class="rail l" aria-hidden="true">
+  <div class="who"><i style="background-image:url(/px/anims/walk_dana_down.png)"></i><span>Dana<small>the boss</small></span></div>
+  <div class="who"><i style="background-image:url(/px/anims/walk_frank_down.png)"></i><span>Frank<small>data</small></span></div>
+  <div class="who"><i class="dog" style="background-image:url(/px/anims/dog_sleep.png)"></i><span>Biscuit<small>off duty</small></span></div>
+</div>
+<div class="rail r" aria-hidden="true">
+  <div class="who"><i style="background-image:url(/px/anims/walk_mei_down.png)"></i><span>Mei<small>testing</small></span></div>
+  <div class="who"><i style="background-image:url(/px/anims/walk_priya_down.png)"></i><span>Priya<small>promotions</small></span></div>
+  <div class="who"><i style="background-image:url(/px/anims/walk_theo_down.png)"></i><span>Theo<small>campaigns</small></span></div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="bean" viewBox="0 0 13 17"><ellipse cx="6.5" cy="8.5" rx="6" ry="8" fill="currentColor"/><path d="M6.5 1.5c-2 3 2 5 0 7.5s1.5 5 0 7" stroke="#fff8" stroke-width="1.4" fill="none"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+<header class="top">
+  <a class="brand" target="_blank" rel="noopener" href="/"><img class="px" src="/px/sprites/face_dana_smile.png" alt="">Lifecycle Practice</a>
+  <nav><a target="_blank" rel="noopener" href="/office/">Play</a><a target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">What's next</a><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice">GitHub</a></nav>
+</header>
+
+<div class="hero">
+  <div>
+    <p class="kick rise">Open source · free for everyone</p>
+    <h1 class="rise d1">Put what you know <em>into the game.</em></h1>
+    <p class="lede rise d2">Lifecycle Practice teaches the judgment calls of lifecycle marketing on screens built like the real tools. The best lessons come from people who do the job. Bring a story, an idea, an afternoon or a weekend.</p>
+    <div class="cta rise d2"><button type="button" class="btn primary" data-goto="ways">Find your way in ↓</button><a class="btn" target="_blank" rel="noopener" href="/office/">Play the game</a></div>
+  </div>
+  <div class="scene rise d1">
+    <div class="frame"><img class="px" src="/px/scenes/office_crew.png" alt="The Fernhill office in pixel art, with the crew at their desks" width="320" height="192"></div>
+    <div class="bubble"><img class="px" src="/px/sprites/face_dana_smile.png" alt=""><b>Dana</b>We're hiring. The pay is your name in the credits.</div>
+  </div>
+</div>
+
+<div class="stats" role="list">
+  <div role="listitem"><b>3</b><span>desks: analytics, data, testing</span></div>
+  <div role="listitem"><b>93</b><span>lessons and counting</span></div>
+  <div role="listitem"><b>0</b><span>accounts or downloads to play</span></div>
+  <div role="listitem"><b>MIT</b><span>free to use, change and share</span></div>
+</div>
+
+<section id="ways">
+  <p class="kick">Four ways in</p>
+  <h2>Pick the one that fits your week.</h2>
+  <p class="sub">From least effort to most. Every one of them makes the game better, and only the last needs code.</p>
+  <div class="ways">
+    <article class="way"><span class="face"><img class="px" src="/px/sprites/face_dana_smile.png" alt=""><span class="n">1</span></span><div>
+      <h3>Tell me what you think</h3>
+      <div class="meta"><span class="beans" title="Effort: 1 of 4" aria-label="Effort: 1 of 4"><svg><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg></span><span>5 minutes</span><span class="chip">No account</span></div>
+      <p>Play any part of the game and press <b>Make a suggestion</b> in the top corner. Pick Bug, Feature idea or Feedback and write a line or two. The box notes where you are in the game for you. "This step confused me" helps as much as a bug report.</p>
+      <div class="acts"><a class="btn sm" target="_blank" rel="noopener" href="/office/">Play the game →</a></div>
+    </div></article>
+
+    <article class="way"><span class="face"><img class="px" src="/px/sprites/face_frank_calm.png" alt=""><span class="n">2</span></span><div>
+      <h3>Talk it through with me</h3>
+      <div class="meta"><span class="beans" title="Effort: 2 of 4" aria-label="Effort: 2 of 4"><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg></span><span>15 to 30 minutes</span><span class="chip">A DM or a Zoom call</span></div>
+      <p>The best levels come from real work. Message me if one of these sounds like you:</p>
+      <ul><li>You have a marketing story: a launch that broke, a flow that quietly stopped working, a test that fooled everyone.</li>
+        <li>You found something clever at work: a segment, a test setup, a report that saves you time every day.</li>
+        <li>You teach this, or you're learning it and remember what was hard.</li></ul>
+      <p>We talk it through and I turn it into a level. You get credit in the game, by name or not, your call.</p>
+      <div class="acts"><a class="btn sm" target="_blank" rel="noopener" href="https://www.linkedin.com/in/brent-barnes-39827622b">Message me on LinkedIn →</a></div>
+    </div></article>
+
+    <article class="way" id="prompt"><span class="face"><img class="px" src="/px/sprites/face_mei_smile.png" alt=""><span class="n">3</span></span><div>
+      <h3>Send a prompt request</h3>
+      <div class="meta"><span class="beans" title="Effort: 2 of 4" aria-label="Effort: 2 of 4"><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg></span><span>15 minutes</span><span class="chip">No coding</span></div>
+      <p>Describe one change the way you'd ask an AI coding agent (Claude Code, Codex, Cursor) to make it. I read every one and choose whether to run it. If I do, I link the change back to you.</p>
+      <div class="acts"><button type="button" class="btn sm primary" id="tplbtn" aria-expanded="false" aria-controls="tpl">Fill in the prompt template</button><a class="textlink" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/new?template=4-prompt.yml">or write it on GitHub →</a></div>
+    <form id="tpl" class="tpl" hidden autocomplete="off">
+      <div id="tplq" style="display:contents"></div>
+      <label class="fld"><span>Your name or GitHub @handle <small>shown publicly</small></span><input type="text" name="who" maxlength="80"></label>
+      <input class="hp" type="text" name="hp" tabindex="-1" aria-hidden="true">
+      <details><summary>Preview the prompt</summary><pre id="tplout"></pre></details>
+      <div class="acts"><button type="submit" class="btn primary" id="tplgo" disabled>Send prompt request</button><button type="button" class="btn" id="tplcopy">Copy the prompt</button><span id="tplmsg" role="status"></span></div>
+      <p class="fine">It goes to the public issue list, where anyone can read it. No GitHub account needed. Please leave out anything private.</p>
+    </form>    </div></article>
+
+    <article class="way"><span class="face"><img class="px" src="/px/sprites/face_theo_smile.png" alt=""><span class="n">4</span></span><div>
+      <h3>Build it yourself</h3>
+      <div class="meta"><span class="beans" title="Effort: 4 of 4" aria-label="Effort: 4 of 4"><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg></span><span>An evening or a weekend</span><span class="chip">GitHub</span></div>
+      <p>Fork the repo and build a new level, a new step, a fix or a whole game mode. Then open a pull request that says what you built, with a <b>review link</b> that opens the game right at your change.</p>
+      <p>Building with an AI agent? Point it at <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> first. It knows the layout, the rules and what to hand back.</p>
+      <div class="acts"><a class="btn sm primary" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/fork">Fork it on GitHub →</a><a class="textlink" href="#builders" data-goto="builders">Builder's notes ↓</a></div>
+    </div></article>
+  </div>
+</section>
+
+<section>
+  <p class="kick">From your desk to the game</p>
+  <h2>How a story becomes a level.</h2>
+  <p class="sub">Most of the game started as something that happened at work. Yours can be next.</p>
+  <div class="flow">
+    <div class="step"><div class="pic"><img class="px" src="/px/sprites/face_you_smile.png" alt=""><i>1</i></div><h3>You tell it</h3><p>In a DM, a call or a prompt request. What happened, what you checked, what you learned.</p></div>
+    <div class="step"><div class="pic"><img class="px" src="/px/sprites/face_frank_serious.png" alt=""><i>2</i></div><h3>It becomes a case</h3><p>Made-up numbers, the same shape as the real thing. One new idea per step, practised until it sticks.</p></div>
+    <div class="step"><div class="pic"><img class="px" src="/px/sprites/face_dana_smile.png" alt=""><i>3</i></div><h3>Players learn from it</h3><p>Everyone who plays it learns what took you a bad week to find out. Your name goes in the credits.</p><span class="credit">with thanks to you</span></div>
+  </div>
+</section>
+
+<section>
+  <p class="kick">What's being built next</p>
+  <div class="board">
+    <div><h3>Pick something off the board.</h3><p>Anything in <b>Up next</b> is open to pick up. Say so in the issue first, so two people don't build the same thing. Issues marked <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/labels/good%20first%20issue">good first issue</a> are small on purpose.</p></div>
+    <a class="btn primary" target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">Open the project board →</a>
+  </div>
+</section>
+
+<section id="builders">
+  <p class="kick">For builders</p>
+  <h2>Everything you need to send a change.</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Run it on your computer</h3>
+      <p>Nothing to install, no build step. You need Python 3 or any static web server.</p>
+      <div class="term"><button type="button" class="copy" data-copy="run">Copy</button><code id="run">git clone https://github.com/YOUR-NAME/lifecycle-practice
+cd lifecycle-practice
+python3 -m http.server 8000</code></div>
+      <p>Then open <a target="_blank" rel="noopener" href="http://localhost:8000">http://localhost:8000</a> and reload to see each change.</p>
+    </div>
+    <div class="panel">
+      <h3>Building with an AI agent</h3>
+      <p>Tell your agent to read <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> before it touches anything. It covers where everything lives, the rules below, what to test, and what to put in the pull request, review links included.</p>
+      <div class="term"><button type="button" class="copy" data-copy="ask">Copy</button><code id="ask"><span class="c"># paste into Claude Code, Codex or Cursor</span>
+Read AGENTS.md, then help me build one change.</code></div>
+    </div>
+    <div class="panel wide">
+      <h3>Review links</h3>
+      <p>A review link is a full web address that opens the game right at the thing you changed, so the reviewer clicks once and is there. Put one in every pull request, written out in full. They use a separate practice save, so they never touch anyone's progress. Try these:</p>
+      <div class="links">
+        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where"><b>An office lesson</b><code>https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where</code><span>→</span></a>
+        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev"><b>A Lifecycle Files step</b><code>https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev</code><span>→</span></a>
+        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev"><b>A Test Board step</b><code>https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev</code><span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="kick">House rules</p>
+  <h2>Six rules every change follows.</h2>
+  <p class="sub">They're why the game teaches well. More detail in <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+  <div class="rules">
+    <div class="rule"><i>01</i><b>One new thing per step</b><span>Teach one idea, practise it alone, then join it with what came before.</span></div>
+    <div class="rule"><i>02</i><b>Every screen asks for a call</b><span>No screens that are only reading. The player decides something every time.</span></div>
+    <div class="rule"><i>03</i><b>Looks like the real tools</b><span>Keep the tools' layouts, so practice carries straight over to work.</span></div>
+    <div class="rule"><i>04</i><b>Made-up everything</b><span>Made-up numbers, people and stores. No real company's data.</span></div>
+    <div class="rule"><i>05</i><b>Nothing to sign up for</b><span>No AI calls, no accounts. The game runs entirely in the browser.</span></div>
+    <div class="rule"><i>06</i><b>Plain words</b><span>Short sentences. Say what to do, not how clever it is.</span></div>
+  </div>
+</section>
+
+<div class="band">
+  <img class="px" src="/px/scenes/office_evening.png" alt="">
+  <div class="in">
+    <p class="kick">The office is open</p>
+    <h2>Pull up a chair.</h2>
+    <p>Five minutes of feedback or a whole new desk. Whatever you bring, someone learning lifecycle marketing will be glad you did.</p>
+    <div class="cta"><button type="button" class="btn primary" data-goto="ways">Find your way in ↑</button><a class="btn" target="_blank" rel="noopener" href="https://www.linkedin.com/in/brent-barnes-39827622b">Say hi on LinkedIn</a></div>
+  </div>
+</div>
+
+<footer><span>Made-up numbers. Fernhill Coffee Co. is a made-up store. MIT license. Made by Brent Barnes.</span><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice">Source on GitHub</a></footer>
+</div>
+<script type="module" src="/shared/site.mjs"></script>
+<script>
+// in-page jumps (they stay on this page) and the Copy buttons on the terminal boxes
+document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); document.getElementById(b.dataset.goto).scrollIntoView({ behavior: "smooth" }); }));
+document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", () => {
+  const t = document.getElementById(b.dataset.copy).innerText.split("\n").filter((l) => !l.startsWith("#")).join("\n");
+  navigator.clipboard.writeText(t).then(() => { b.textContent = "Copied ✓"; setTimeout(() => { b.textContent = "Copy"; }, 1600); });
+}));
+</script>
+<script type="module">
+// The prompt template (shared/prompt.mjs, the same questions as the game's suggestion box): the player fills it in,
+// sees the prompt it builds, and sends it as a "Prompt request" issue through /api/feedback (no GitHub account), or
+// opens GitHub's own form with the answers filled in.
+import * as T from "/shared/prompt.mjs";
+const f = document.getElementById("tpl"), btn = document.getElementById("tplbtn");
+const out = document.getElementById("tplout"), go = document.getElementById("tplgo"), msg = document.getElementById("tplmsg");
+document.getElementById("tplq").innerHTML = T.fieldsHTML();
+const say = (t, cls, html) => { msg.className = cls || ""; msg[html ? "innerHTML" : "textContent"] = t; };
+btn.onclick = () => { f.hidden = !f.hidden; btn.setAttribute("aria-expanded", String(!f.hidden)); btn.textContent = f.hidden ? "Fill in the prompt template" : "Hide the template"; if (!f.hidden) f.querySelector("input").focus(); };
+function refresh() { T.syncOthers(f); out.textContent = T.promptText(T.read(f)); go.disabled = !T.ready(T.read(f)); }
+f.addEventListener("input", refresh); f.addEventListener("change", refresh); refresh();
+document.getElementById("tplcopy").onclick = () => navigator.clipboard.writeText(T.promptText(T.read(f))).then(() => say("Copied. Paste it into your AI agent, or send it here."), () => say("Your browser blocked copying. Select the preview text instead.", "err"));
+f.onsubmit = async (e) => {
+  e.preventDefault();
+  const a = T.read(f);
+  if (f.elements.hp.value || !T.ready(a)) return;
+  go.disabled = true; go.textContent = "Sending…"; say("");
+  try {
+    const r = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "prompt", title: T.title(a), body: T.body(a) }) });
+    const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
+    if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
+    f.querySelectorAll("input, textarea").forEach((x) => { x.disabled = true; });
+    go.textContent = "Sent ✓";
+    say('Sent. Thank you! <a target="_blank" rel="noopener" href="' + j.url + '">See it on GitHub (#' + j.number + ")</a>", "ok", true);
+  } catch (err) {
+    go.textContent = "Send prompt request"; go.disabled = false;
+    say("It couldn't send from here. " + '<a target="_blank" rel="noopener" href="' + T.ghUrl(a).replace(/"/g, "&quot;") + '">Open it on GitHub with your answers filled in</a> (needs a free account), or copy the prompt.', "err", true);
+  }
+};
+</script>
+</body></html>

@@ -568,5 +568,13 @@ if (location.search.includes("debug")) window.__office = { G, P, get O() { retur
 $("snd").textContent = MUTED ? "sound off" : "sound on"; $("snd").onclick = mute;
 if (DEV) { $("devbadge").hidden = false; $("devoff").onclick = () => { location.href = location.pathname + "?dev=0"; }; }
 else $("devon").hidden = false;
+// Review link (?dev&try=<role>:<lesson id>, e.g. ?dev&try=data:<id>): opens that lesson at its desk on the dev save, so a
+// reviewer lands right on a contribution. Roles: analytics, data, testing. Lesson ids: TRACKS in days.mjs.
+function tryLink() {
+  const [role, id] = (new URLSearchParams(location.search).get("try") || "").split(":");
+  if (!DEV || !TRACKS[role] || !TRACKS[role].lessons.some((l) => l.id && l.id === id)) return false;
+  O.hired = true; G.day = O.day; pickLesson(role, id); openDesk(TRACKS[role].desk);
+  return true;
+}
 fit(); grab(); requestAnimationFrame(frameLoop);
-Promise.all([loadArt(), loadSave()]).then(refreshStatus).then(() => { fit(); goDay(); });
+Promise.all([loadArt(), loadSave()]).then(refreshStatus).then(() => { fit(); if (!tryLink()) goDay(); });
