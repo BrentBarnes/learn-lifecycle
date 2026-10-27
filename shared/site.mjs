@@ -7,12 +7,14 @@
 //     answer; a "✓ Saved" light shows each time, and the first save asks the browser to keep the site's storage.
 // Not shown inside the office's frames: the office page has its own. While the page shows an element with
 // data-siteslot (the office's desk headers), the buttons sit inside it instead of floating over the corner.
+import * as T from "./prompt.mjs";   // the prompt request template, shared with the contribute page
 const REPO = "BrentBarnes/lifecycle-practice";
 const KINDS = [
   { id: "bug", icon: "🐞", name: "Bug", hint: "Something broke or looks wrong", label: "bug", ask: "What happened, and what did you expect?" },
   { id: "idea", icon: "💡", name: "Feature idea", hint: "Something the game should do", label: "idea", ask: "What would you like the game to do?" },
   { id: "feedback", icon: "💬", name: "Feedback", hint: "What worked, what didn't", label: "feedback", ask: "What did you think?" },
   { id: "other", icon: "✳️", name: "Something else", hint: "Anything at all", label: "other", ask: "What's on your mind?" },
+  { id: "prompt", icon: "🤖", name: "Prompt request", hint: "Ask for a change, written so an AI coding agent can build it", label: "prompt", ask: "" },
 ];
 const IDB = "/state";   // Pyodide's IDBFS database (lifecycle-files/static-api.js mounts it at /state)
 
@@ -53,6 +55,19 @@ function mount() {
   .sbkinds button{font:inherit;text-align:left;background:#fff;border:1.5px solid #e2ddd4;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;color:inherit}
   .sbkinds button b{display:block;font-size:14px}.sbkinds button small{color:#6b6873;font-size:12px}
   .sbkinds button .ic{font-size:20px;line-height:1}
+  .sbkinds button[data-k="prompt"]{grid-column:1/-1}
+  .sbfields .hint{margin:0;font-size:12.5px;color:#4a4752;background:#f1eefb;border-radius:8px;padding:8px 10px}
+  .sbfields fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+  .sbfields legend,.sbfields .fld>span{font-size:13.5px;font-weight:600;padding:0;margin-bottom:6px}
+  .sbfields .fld{display:flex;flex-direction:column}
+  .sbfields .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .sbfields .chips label{display:inline-flex;gap:5px;align-items:center;border:1.5px solid #e2ddd4;border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;background:#fff}
+  .sbfields .chips label small{color:#8a8792;font-size:11.5px}
+  .sbfields .chips label:has(input:checked){border-color:#6e56cf;background:#f1eefb}
+  .sbfields .chips input{position:absolute;opacity:0;pointer-events:none}.sbfields .chips label:focus-within{outline:2px solid #6e56cf88;outline-offset:1px}
+  .sbbox .sbfields textarea{min-height:0;font-weight:400}.sbbox .sbfields textarea[name="what"]{min-height:84px}
+  .sbfields details summary{cursor:pointer;color:#5a44b8;font-size:12.5px}
+  .sbfields pre{white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto;background:#22202a;color:#efeaf7;border-radius:8px;padding:10px;margin:6px 0 0;font:11.5px/1.5 ui-monospace,monospace}
   .sbkinds button:hover{border-color:#b3a6e6}.sbkinds button.on{border-color:#6e56cf;background:#f1eefb}
   .sbbox textarea,.sbbox input[type=text]{font:inherit;width:100%;box-sizing:border-box;border:1.5px solid #e2ddd4;border-radius:8px;padding:9px 10px;background:#fff;color:inherit}
   .sbbox textarea{min-height:120px;resize:vertical}
@@ -182,12 +197,14 @@ function snapshot() {
         try { doc = fr.contentDocument; at.place.push(...headings(doc).filter((t) => !at.place.includes(t))); errs = errs.concat(fr.contentWindow.__siteErrors || []); } catch (e) { /* not ours */ }
       } else if (/sql/i.test(at.place.join(" "))) { role = "data"; id = today.sql; }
       if (role && id) at.review = `${location.origin}/office/?dev&try=${role}:${encodeURIComponent(id)}`;
-    } else at.place = [`In the office room${O.hired ? `, day ${O.day || 1}` : ", before picking roles"}`];
+      at.where = role || "office";
+    } else { at.place = [`In the office room${O.hired ? `, day ${O.day || 1}` : ", before picking roles"}`]; at.where = "office"; }
   } else if (path.startsWith("/lifecycle-files/")) {
     const r = typeof R !== "undefined" ? R : null;   // path.js's sitting on screen (a classic script's global)
+    at.where = "analytics";
     if (r && r.sid) at.review = `${location.origin}/lifecycle-files/?start=step&step=${encodeURIComponent(r.sid)}&profile=office-dev`;
   } else if (path.startsWith("/test-board/")) {
-    const S = readLS("tb3");
+    const S = readLS("tb3"); at.where = "testing";
     if (S && S.units) at.progress = `${Object.values(S.units).filter((u) => u && u.passed).length} Test Board steps passed`;
   }
   const bar = document.getElementById("sitebar"), was = bar && bar.style.display;
@@ -256,11 +273,25 @@ function suggest() {
   const close = () => { v.remove(); window.removeEventListener("keydown", onEsc, true); window.removeEventListener("blur", onBlur); frames.forEach((f) => { f.inert = false; }); };
   window.addEventListener("keydown", onEsc, true);   // Esc closes it wherever focus is
   const vals = () => [...v.querySelectorAll("[data-f]")].map((t) => t.value.trim());
-  const ready = () => { $("#sbgo").disabled = sent || !kind || (vals()[0] || "").length < 3; };
+  const isPrompt = () => kind && kind.id === "prompt";
+  const answers = () => Object.assign(T.read($("#sbfields"), $("#sbwhere").checked ? at.review : ""), { who: $("#sbwho").value.trim() });
+  const refreshPrompt = () => { if (!isPrompt()) return; T.syncOthers($("#sbfields")); $("#sbppre").textContent = scrub(T.promptText(answers())); };
+  const ready = () => { refreshPrompt(); $("#sbgo").disabled = sent || !kind || (isPrompt() ? !T.ready(answers()) : (vals()[0] || "").length < 3); };
   v.querySelectorAll("[data-k]").forEach((b) => b.onclick = () => {
-    const keep = vals();
+    const keep = isPrompt() ? [T.read($("#sbfields")).what] : vals();
     kind = KINDS.find((k) => k.id === b.dataset.k);
     v.querySelectorAll("[data-k]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    if (isPrompt()) {
+      const box = $("#sbfields");
+      box.innerHTML = T.fieldsHTML() + `<details><summary>Preview the prompt</summary><pre id="sbppre"></pre></details>`;
+      if (at.where) T.choose(box, "where", at.where);
+      box.querySelector('[name="spot"]').value = at.place.find((t) => /·|›/.test(t)) || "";
+      if (keep[0]) box.querySelector('[name="what"]').value = keep[0];
+      box.oninput = box.onchange = ready;
+      box.querySelector('[name="what"]').focus(); ready();
+      return;
+    }
+    $("#sbfields").oninput = $("#sbfields").onchange = null;
     $("#sbfields").innerHTML = ASK[kind.id].map(([q, ph], i) => `<label class="sbq"><span>${q}${i ? ' <small>optional</small>' : ""}</span><textarea data-f="${i}" rows="${i ? 2 : 4}" maxlength="3000" placeholder="${esc(ph)}"></textarea></label>`).join("") +
       (kind.id === "bug" ? `<div class="sbq"><span>Does it happen again after you reload the page? <small>optional</small></span><div class="sbseg">${["Yes", "No", "Didn't try"].map((a) => `<button type="button" data-a="${a}" class="${again === a ? "on" : ""}">${a}</button>`).join("")}</div></div>` : "");
     v.querySelectorAll("[data-f]").forEach((t, i) => { if (keep[i]) t.value = keep[i]; t.oninput = ready; });
@@ -269,7 +300,12 @@ function suggest() {
   });
   $("#sbx").onclick = close;
   v.addEventListener("click", (e) => { if (e.target === v) close(); });
+  $("#sbwho").addEventListener("input", ready); $("#sbwhere").addEventListener("change", ready);
   const issue = () => {
+    if (isPrompt()) {
+      const a = answers(); for (const key of Object.keys(a)) a[key] = scrub(a[key]);
+      return { kind: "prompt", title: T.title(a), body: T.body(a) + ($("#sbwhere").checked ? "\n\n" + contextMd(at) : ""), label: "prompt" };
+    }
     const k = kind || KINDS[3], f = vals().map(scrub), who = scrub($("#sbwho").value.trim());
     const line = flat(f[0]).slice(0, 70) || "(no text)";
     const title = `${k.name} · ${at.game.replace(/^The /, "")}: ${line}`;
@@ -279,7 +315,7 @@ function suggest() {
     if ($("#sbwhere").checked) parts.push(contextMd(at));
     return { kind: k.id, title, body: parts.join("\n\n"), label: k.label };
   };
-  const ghUrl = () => { const i = issue(); return `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ title: i.title, body: (i.body + "\n\n_Sent from the game._").slice(0, 6000), labels: i.label }); };
+  const ghUrl = () => { if (isPrompt()) return T.ghUrl(answers()); const i = issue(); return `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ title: i.title, body: (i.body + "\n\n_Sent from the game._").slice(0, 6000), labels: i.label }); };
   $("#sbgh").onclick = (e) => { e.preventDefault(); window.open(ghUrl(), "_blank", "noopener"); };
   v.querySelector("form").onsubmit = async (e) => {
     e.preventDefault();
@@ -292,7 +328,7 @@ function suggest() {
       const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
       if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
       sent = true;
-      v.querySelectorAll("textarea, input, .sbkinds button, .sbseg button").forEach((x) => { x.disabled = true; });
+      v.querySelectorAll("textarea, input, .sbkinds button, .sbseg button, .chips input").forEach((x) => { x.disabled = true; });
       out.innerHTML = `<div class="sbdone">Sent. Thank you! <a href="${esc(j.url)}" target="_blank" rel="noopener">See it on GitHub (#${esc(j.number)})</a></div>`;
       go.textContent = "Sent ✓"; $("#sbgh").hidden = true; $("#sbx").textContent = "Close"; $("#sbx").focus();
     } catch (err) {

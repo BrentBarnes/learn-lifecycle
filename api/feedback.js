@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     r = await fetch(`https://api.github.com/repos/${repo}/issues`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "lifecycle-practice-feedback", "X-GitHub-Api-Version": "2022-11-28" },
-      body: JSON.stringify({ title, body: `${text}\n\n_Sent from ${kind === "prompt" ? "the contribute page" : "the game's suggestion box"} (${KINDS[kind]})._`, labels: kind === "prompt" ? ["prompt"] : ["from-game", kind] }),
+      body: JSON.stringify({ title, body: `${text}\n\n_Sent from ${kind === "prompt" ? "a prompt request form" : "the game's suggestion box"} (${KINDS[kind]})._`, labels: kind === "prompt" ? ["prompt"] : ["from-game", kind] }),
     });
   } catch (e) { return res.status(502).json({ error: "GitHub didn't answer" }); }
   if (!r.ok) { console.error(`GitHub said ${r.status}`); return res.status(502).json({ error: `GitHub said ${r.status}` }); }

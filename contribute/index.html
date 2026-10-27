@@ -260,26 +260,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
       <p>Describe one change the way you'd ask an AI coding agent (Claude Code, Codex, Cursor) to make it. I read every one and choose whether to run it. If I do, I link the change back to you.</p>
       <div class="acts"><button type="button" class="btn sm primary" id="tplbtn" aria-expanded="false" aria-controls="tpl">Fill in the prompt template</button><a class="textlink" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/new?template=4-prompt.yml">or write it on GitHub →</a></div>
     <form id="tpl" class="tpl" hidden autocomplete="off">
-      <p class="hint">Only "What should change?" is needed. Everything else is a suggestion: each detail you add makes the prompt more specific, so it can be built right away with fewer questions back to you.</p>
-      <fieldset><legend>What kind of change is it?</legend><div class="chips" data-group="kind">
-        <label><input type="radio" name="kind" value="a new level or step">A new level or step</label>
-        <label><input type="radio" name="kind" value="a fix for something broken">A bug fix</label>
-        <label><input type="radio" name="kind" value="a change to an existing step">A change to a step</label>
-        <label><input type="radio" name="kind" value="a skill the game doesn't teach yet">A missing skill</label>
-        <label><input type="radio" name="kind" value="a new game mode">A new game mode</label>
-        <label><input type="radio" name="kind" value="other">Other</label></div>
-        <input type="text" name="kind_other" class="other" placeholder="What kind of change?" maxlength="120" hidden></fieldset>
-      <fieldset><legend>Where does it live?</legend><div class="chips" data-group="where">
-        <label><input type="radio" name="where" value="Analytics: Lifecycle Files, the dashboard wall">Analytics <small>Lifecycle Files</small></label>
-        <label><input type="radio" name="where" value="Data: SQL at Frank's desk">Data <small>SQL</small></label>
-        <label><input type="radio" name="where" value="Testing: the Test Board">Testing <small>Test Board</small></label>
-        <label><input type="radio" name="where" value="the office itself (the room, days, roles)">The office <small>the room, days, roles</small></label>
-        <label><input type="radio" name="where" value="other">Other</label></div>
-        <input type="text" name="where_other" class="other" placeholder="Where should it live?" maxlength="120" hidden></fieldset>
-      <label class="fld"><span>Which level, step or skill?</span><input type="text" name="spot" maxlength="160" placeholder="Level 2, step 3 · the GROUP BY lesson · reading a holdout"></label>
-      <label class="fld"><span>What should change?</span><textarea name="what" rows="4" maxlength="3000" placeholder="Add a step after 2s3 where the change log has two changes on the same day, and the player picks the one that touched the email that dropped."></textarea></label>
-      <label class="fld"><span>Why? What would a player learn, or stop getting stuck on?</span><textarea name="why" rows="2" maxlength="1500" placeholder="At work, two changes often ship the same day. Players never practise telling them apart."></textarea></label>
-      <label class="fld"><span>How will we know it worked?</span><textarea name="check" rows="2" maxlength="1500" placeholder="The new step shows after 2s3. Its reps pass after 4 of the last 5 right."></textarea></label>
+      <div id="tplq" style="display:contents"></div>
       <label class="fld"><span>Your name or GitHub @handle <small>shown publicly</small></span><input type="text" name="who" maxlength="80"></label>
       <input class="hp" type="text" name="hp" tabindex="-1" aria-hidden="true">
       <details><summary>Preview the prompt</summary><pre id="tplout"></pre></details>
@@ -381,58 +362,35 @@ document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("clic
   navigator.clipboard.writeText(t).then(() => { b.textContent = "Copied ✓"; setTimeout(() => { b.textContent = "Copy"; }, 1600); });
 }));
 </script>
-<script>
-// The prompt template: the player fills in a few fields, sees the prompt it builds, and sends it as a "Prompt request"
-// issue through the site's /api/feedback (no GitHub account), or opens GitHub's own form with the fields filled in.
-(() => {
-  const REPO = "BrentBarnes/lifecycle-practice", f = document.getElementById("tpl"), btn = document.getElementById("tplbtn");
-  const out = document.getElementById("tplout"), go = document.getElementById("tplgo"), msg = document.getElementById("tplmsg");
-  const val = (n) => (f.elements[n] && f.elements[n].value || "").trim();
-  const pick = (n) => { const v = val(n); return v === "other" ? val(n + "_other") : v; };
-  const say = (t, cls, html) => { msg.className = cls || ""; msg[html ? "innerHTML" : "textContent"] = t; };
-  btn.onclick = () => { f.hidden = !f.hidden; btn.setAttribute("aria-expanded", String(!f.hidden)); btn.textContent = f.hidden ? "Fill in the prompt template" : "Hide the template"; if (!f.hidden) f.querySelector("input").focus(); };
-  function prompt() {
-    const kind = pick("kind"), where = pick("where"), spot = val("spot");
-    return [
-      "You're working on Lifecycle Practice (https://github.com/" + REPO + "). Read AGENTS.md first and follow its rules.",
-      "",
-      (kind || where || spot) ? "The change: " + [kind, where && "in " + where, spot && "at " + spot].filter(Boolean).join(", ") + "." : null,
-      "What to do: " + (val("what") || "[what should change]"),
-      val("why") ? "Why it matters: " + val("why") : null,
-      val("check") ? "Done when: " + val("check") : null,
-      "",
-      "Hand back what you built, a full review link that opens the game right at the change, and how to check it.",
-    ].filter((l) => l !== null).join("\n");
+<script type="module">
+// The prompt template (shared/prompt.mjs, the same questions as the game's suggestion box): the player fills it in,
+// sees the prompt it builds, and sends it as a "Prompt request" issue through /api/feedback (no GitHub account), or
+// opens GitHub's own form with the answers filled in.
+import * as T from "/shared/prompt.mjs";
+const f = document.getElementById("tpl"), btn = document.getElementById("tplbtn");
+const out = document.getElementById("tplout"), go = document.getElementById("tplgo"), msg = document.getElementById("tplmsg");
+document.getElementById("tplq").innerHTML = T.fieldsHTML();
+const say = (t, cls, html) => { msg.className = cls || ""; msg[html ? "innerHTML" : "textContent"] = t; };
+btn.onclick = () => { f.hidden = !f.hidden; btn.setAttribute("aria-expanded", String(!f.hidden)); btn.textContent = f.hidden ? "Fill in the prompt template" : "Hide the template"; if (!f.hidden) f.querySelector("input").focus(); };
+function refresh() { T.syncOthers(f); out.textContent = T.promptText(T.read(f)); go.disabled = !T.ready(T.read(f)); }
+f.addEventListener("input", refresh); f.addEventListener("change", refresh); refresh();
+document.getElementById("tplcopy").onclick = () => navigator.clipboard.writeText(T.promptText(T.read(f))).then(() => say("Copied. Paste it into your AI agent, or send it here."), () => say("Your browser blocked copying. Select the preview text instead.", "err"));
+f.onsubmit = async (e) => {
+  e.preventDefault();
+  const a = T.read(f);
+  if (f.elements.hp.value || !T.ready(a)) return;
+  go.disabled = true; go.textContent = "Sending…"; say("");
+  try {
+    const r = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "prompt", title: T.title(a), body: T.body(a) }) });
+    const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
+    if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
+    f.querySelectorAll("input, textarea").forEach((x) => { x.disabled = true; });
+    go.textContent = "Sent ✓";
+    say('Sent. Thank you! <a target="_blank" rel="noopener" href="' + j.url + '">See it on GitHub (#' + j.number + ")</a>", "ok", true);
+  } catch (err) {
+    go.textContent = "Send prompt request"; go.disabled = false;
+    say("It couldn't send from here. " + '<a target="_blank" rel="noopener" href="' + T.ghUrl(a).replace(/"/g, "&quot;") + '">Open it on GitHub with your answers filled in</a> (needs a free account), or copy the prompt.', "err", true);
   }
-  const ready = () => val("what").length >= 10;   // the only field it needs; the rest make the prompt more specific
-  function refresh() {
-    f.querySelectorAll(".other").forEach((o) => { o.hidden = val(o.name.replace("_other", "")) !== "other"; });
-    out.textContent = prompt(); go.disabled = !ready();
-  }
-  f.addEventListener("input", refresh); f.addEventListener("change", refresh); refresh();
-  const title = () => "Prompt request · " + (pick("where").split(":")[0] || "Lifecycle Practice") + ": " + val("what").replace(/\s+/g, " ").slice(0, 70);
-  const body = () => [pick("kind") && "**Kind:** " + pick("kind"), pick("where") && "**Where:** " + pick("where"), val("spot") && "**Which level, step or skill:** " + val("spot"),
-    "**What should change**\n\n" + val("what"), val("why") && "**Why**\n\n" + val("why"), val("check") && "**How to check it worked**\n\n" + val("check"),
-    val("who") && "From: " + val("who"), "**The prompt**\n\n~~~\n" + prompt().replace(/~{3,}/g, "~ ~ ~") + "\n~~~"].filter(Boolean).join("\n\n");
-  const ghUrl = () => "https://github.com/" + REPO + "/issues/new?" + new URLSearchParams({ template: "4-prompt.yml", title: title(),
-    change: val("what").split("\n")[0].slice(0, 200), prompt: prompt(), check: val("check") });
-  document.getElementById("tplcopy").onclick = () => navigator.clipboard.writeText(prompt()).then(() => say("Copied. Paste it into your AI agent, or send it here."), () => say("Your browser blocked copying. Select the preview text instead.", "err"));
-  f.onsubmit = async (e) => {
-    e.preventDefault();
-    if (val("hp") || !ready()) return;
-    go.disabled = true; go.textContent = "Sending…"; say("");
-    try {
-      const r = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "prompt", title: title(), body: body() }) });
-      const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
-      if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
-      f.querySelectorAll("input, textarea").forEach((x) => { x.disabled = true; });
-      go.textContent = "Sent ✓";
-      say('Sent. Thank you! <a target="_blank" rel="noopener" href="' + j.url + '">See it on GitHub (#' + j.number + ")</a>", "ok", true);
-    } catch (err) {
-      go.textContent = "Send prompt request"; go.disabled = false;
-      say("It couldn't send from here. " + '<a target="_blank" rel="noopener" href="' + ghUrl().replace(/"/g, "&quot;") + '">Open it on GitHub with your answers filled in</a> (needs a free account), or copy the prompt.', "err", true);
-    }
-  };
-})();
+};
 </script>
 </body></html>
