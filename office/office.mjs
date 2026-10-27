@@ -313,102 +313,315 @@ addEventListener("message", (e) => {
 });
 
 // ----- Frank Mallory's SQL desk: one part a day (sql.mjs) -----
-let DB = null;
+// three databases: Units A and B's small shop, the grown shop (Unit C on), and the hidden grown shop answers are also graded on
+let DB = null, DBB = null, DBH = null;
 async function db() {
   if (DB) return DB;
   const SQL = await initSqlJs({ locateFile: (f) => f });
-  DB = new SQL.Database(); Q.load(DB); return DB;
+  DB = new SQL.Database(); Q.load(DB); DBB = new SQL.Database(); Q.loadBig(DBB); DBH = new SQL.Database(); Q.loadBig(DBH, true); return DB;
 }
-const run = (q) => { const r = DB.exec(q); return r.length ? { cols: r[0].columns, rows: r[0].values } : { cols: [], rows: [] }; };
-const SQ = { view: "lesson", rep: null, text: "", out: null, tries: 0, done: false, ok: false, fb: "", peek: false, r: Q.rng(Date.now() & 0xffffff) };
-const CLOSERS = ["Case closed. The coffee's cold. The rows are warm.", "Clean. Like a fresh export.", "The data always talks. You just stop asking it nicely.", "That's the one. File it."];
+const runIn = (d, q) => { const r = d.exec(q); return r.length ? { cols: r[0].columns, rows: r[0].values } : { cols: [], rows: [] }; };
+// the step the desk is on: today's lesson, or the passed step a review rep comes from (its shop and its board)
+const act = () => SQ.part || lessonId("sql");
+const run = (q) => runIn(Q.isBig(act()) ? DBB : DB, q);
+// real calendar days for review (?today=YYYY-MM-DD in debug, to test the schedule)
+const TODAY = () => (location.search.includes("debug") && new URLSearchParams(location.search).get("today")) || new Date().toLocaleDateString("en-CA");
+const REVIEWABLE = new Map(), canReview = (id) => { if (!REVIEWABLE.has(id)) REVIEWABLE.set(id, Q.reviewable(id)); return REVIEWABLE.get(id); };
+// every passed step gets a review card; one passed before cards existed is due today
+function ensureCards() {
+  const srs = O.sql._srs = O.sql._srs || {}, today = TODAY();
+  for (const p of Q.PARTS) if (O.sql[p.id] && O.sql[p.id].passed && !srs[p.id] && canReview(p.id)) srs[p.id] = { ivl: 1, due: today, seen: O.sql[p.id].last || today };
+}
+const dueNow = () => Q.dueIds(O.sql._srs, TODAY());
+const SQ = { view: "lesson", mode: "lesson", part: null, queue: [], stages: [], rep: null, text: "", out: null, tries: 0, done: false, ok: false, fb: "", peek: false, r: Q.rng(Date.now() & 0xffffff) };
+// Frank's line on a right answer, ten per unit (batch 3: right-answer feel)
+const CLOSERS = {
+  A: ["Clean. Like a fresh export.", "That's the one. File it.", "Right rows, nothing extra. That's the whole job most days.", "The table talked. You asked the right question.", "Narrow it down, kid. You did.",
+    "A WHERE that keeps what it should. Worth its weight.", "Filed. Next.", "No strays in that list. I checked.", "That's a clean pull. Theo can send it.", "Simple questions, right answers. Don't knock it."],
+  B: ["The numbers add up. Mostly they don't, so enjoy it.", "One pile per thing. That's the trick.", "Counted right. The auditors sleep tonight.", "That total's honest. I'd sign it.", "Clean. The coffee's cold. The numbers are warm.",
+    "Group it, count it, file it.", "That's the figure. Write it on the board.", "Every pile accounted for.", "A wrong count looks as sure as a right one. This one's right.", "The data always talks. You just stop asking it nicely."],
+  C: ["Two tables, one story. You lined them up.", "The keys matched. They usually do, if you ask.", "Joined right. No ghosts, no doubles.", "Nobody fell through the join. Good.", "The strings on the board led where they should.",
+    "That's the link. File it.", "Every customer where they belong.", "Clean join. I've seen grown analysts double a revenue line with less.", "The missing ones showed up. That's what LEFT is for.", "Right rows. The board's earning its keep."],
+  D: ["Step by step. That's how the big ones crack.", "The dates lined up. Time's the sneakiest column.", "One stage at a time. Never let a query do two jobs.", "That pipeline holds water.", "Right order, right numbers. Go home early.",
+    "Each stage handed the next one the right thing.", "Time-ordered and true. Nice.", "Big question, small pieces. You got it.", "That's the timeline. File it.", "The steps agree with each other. That's rarer than you think."],
+  E: ["From brief to rows, on your own. That's the job.", "Nobody planned that for you. Good.", "Stages named right, rows right. I'd hire you.", "That's an analyst's query. Not a student's.", "Clean pipeline. Hank can take it upstairs.",
+    "You wrote the plan and the query. Both held.", "Every stage pulls its weight.", "That's the whole picture. File it.", "A query you can read next month. Rare.", "Right answer, right shape. Done."],
+  F: ["Translated, and nothing lost on the way.", "Somebody else's paperwork, and you read it right.", "Codes cracked. The file talks now.", "That's what the job looks like on a Monday.", "Clean emails, clean join. Most people miss that.",
+    "Text that looks like a number. You didn't fall for it.", "New town, same rules. You'd do fine here.", "You read before you asked. That's the habit.", "Any database, any export. Same detective.", "Filed, in their language and ours."],
+  M: ["That's a number somebody will act on. It's right.", "The metric's honest. Put it in the deck.", "Right denominator. That's where most of them go wrong.", "That's what it's worth. Money talks.", "Clean. Finance won't call.",
+    "That rate holds up. I checked the bottom of the fraction.", "There's the money. File it.", "Right number. Somebody's budget depends on it.", "A metric is just a query somebody trusts. Trust this one.", "That's the figure. Take it upstairs."],
+  case: ["Case closed. The coffee's cold. The rows are warm.", "Closed. Put it in the drawer with the others.", "That's the whole story. Stamp it.", "Every step held. Case closed.", "The answer was in the tables the whole time. You found it.",
+    "Closed. Go tell them what it cost.", "That's how a case cracks: one small question at a time.", "Case closed. Nobody's guessing anymore.", "File it under solved.", "Done. The answer's on the desk."] };
+const unitOf = (part) => part.kind === "case" ? "case" : part.group.startsWith("Metric") ? "M" : (part.group.match(/^Unit ([A-F])/) || [, "A"])[1];
+const closer = (part, n) => { const L = CLOSERS[unitOf(part)]; return L[n % L.length]; };
+const fmtV = (v) => typeof v === "number" && !Number.isInteger(v) ? String(+v.toFixed(2)) : String(v);
+// a case's answer in one line: the number, or the rows it came to
+const answerOf = (o) => !o || o.err ? "" : o.rows.length === 1 && o.cols.length === 1 ? `The answer: ${fmtV(o.rows[0][0])}.` : `The answer: ${o.rows.length.toLocaleString()} row${o.rows.length === 1 ? "" : "s"}, below.`;
+// the coworker says back what came out, so a right answer reads as a finding, not a grade
+function echo(o, n) {
+  if (!o || o.err) return "Perfect, thank you!";
+  if (!o.rows.length) return "Nobody. That's actually the answer I needed.";
+  if (o.rows.length === 1 && o.cols.length === 1) { const v = fmtV(o.rows[0][0]); return [`${v}. That's the number I needed.`, `${v}? Great, that goes in the report.`, `So it's ${v}. Thank you!`, `${v}. Writing that down now.`][n % 4]; }
+  if (o.rows.length === 1) return "Just the one row. That's it, thanks!";
+  const k = o.rows.length.toLocaleString(), first = fmtV(o.rows[0][0]);
+  return [`${k} rows. That's the list I needed.`, `All ${k} of them. Perfect.`, `${k} rows, starting with ${first}. That's it.`, `That's the ${k} I was after. Thanks!`][n % 4];
+}
 const STUMPED = ["Wrong rows. Happens to the best of us. Happened to me in '14.", "Something's off. Look again. The table's hiding something."];
 async function sqlOpen() {
   sheet().className = "sheet term"; sheet().innerHTML = `<header><b>Frank Mallory's desk</b><span class="sp"></span>${FULL}<button class="x" id="close" type="button">Step away · Esc</button></header><div class="body"><div class="main"><p>Loading the database…</p></div></div>`;
   $("close").onclick = closeDesk;
   await db(); if (G.desk !== "sql") return;
-  const id = lessonId("sql");
+  ensureCards();
+  if (!SQ.hooked) { SQ.hooked = true; sheet().addEventListener("click", (e) => { if (e.target.closest && e.target.closest("#rev")) startReview(); }); }
+  if (SQ.mode !== "lesson" && (SQ.view === "rep" || SQ.view === "revdone" || SQ.view === "recap")) return sqlDraw();   // a review or a recap still open
+  SQ.mode = "lesson";
+  const id = lessonId("sql"); SQ.part = id;
   if (!id) { SQ.view = "later"; return sqlDraw(); }
   const st = sqlSt(id);
+  // ten misses yesterday: today opens on the lesson and its worked example
+  if (st.relesson && (!st.missDay || st.missDay.d !== TODAY())) { st.relesson = false; SQ.view = "lesson"; save(); }
+  // previously at Fernhill: before a new step's lesson, the parts it leans on that haven't been touched in a week
+  const recapped = O.sql._recap && O.sql._recap[id];
+  if (!st.reps.length && SQ.view === "lesson" && !recapped) { const rz = Q.rusty(id, O.sql, TODAY()).filter(canReview); if (rz.length) { Object.assign(SQ, { mode: "recap", queue: rz, view: "recap", recapFor: id, revN: 0, revClean: 0, revTotal: rz.length }); return sqlDraw(); } }
   if (SQ.view === "pass" || SQ.view === "later" || (SQ.rep && SQ.rep.part !== id)) SQ.view = st.reps.length ? "rep" : "lesson";
   if (SQ.view === "rep" && (!SQ.rep || SQ.rep.part !== id || SQ.done)) newRep();
   sqlDraw();
 }
+// clause sets this player has built (SQL-CURRICULUM.md, first sight): a set never built comes as an Extend rep first
+const seenSql = () => new Set(O.sql._seen || []);
 function newRep() {
-  const id = lessonId("sql"), st = sqlSt(id);
-  SQ.rep = Q.nextRep(id, st, SQ.r); Object.assign(SQ, { text: "", out: null, tries: 0, done: false, ok: false, fb: "", peek: false, swapped: false, typed: null });
+  let t;
+  if (SQ.mode === "lesson") { const id = SQ.part = lessonId("sql"); t = SQ.rep = Q.nextRep(id, sqlSt(id), SQ.r, seenSql(), twinCheck); }
+  else { const id = SQ.part = SQ.queue.shift(); SQ.retrying = SQ.requeued && SQ.requeued.includes(id) ? id : null; t = SQ.rep = Q.reviewRep(id, SQ.r); }
+  SQ.stages = []; SQ.unfold = []; SQ.back = false; SQ.myPlan = null; SQ.planWhy = ""; SQ.planText = "";
+  clearTimeout(SQ.unlockT);
+  Object.assign(SQ, TRY0(), { text: t.kind === "extend" ? t.base.replace(/;$/, "") : t.kind === "fix" ? t.bad : t.kind === "fill" ? t.fill : "", done: false, ok: false, peek: false, swapped: false, typed: null, climbed: 0,
+    sub: 0, subs: [], subFail: false, subMiss: false, subClean: true });
+  skipGiven();
 }
-const header = (t) => `<header><b>Frank Mallory's desk</b><span class="tool">SQL · ${t}</span><span class="sp"></span>${FULL}<button class="x" id="close" type="button">Step away · Esc</button></header>`;
-function resultHTML(o, cap = 15) {
+// a pipeline's given stages (tier 1: one stage blank) run by themselves and pin to the board
+function skipGiven() {
+  const t = SQ.rep; if (!t.steps) return;
+  while (SQ.sub < t.steps.length && t.steps[SQ.sub].given) { const s = t.steps[SQ.sub], out = run(s.sql); SQ.subs.push({ out, given: true }); pinStage(s, out); SQ.sub++; }
+  if (SQ.sub >= t.steps.length) SQ.sub = t.steps.length - 1;
+}
+function pinStage(s, out) { if (s.stage && out && out.cols) SQ.stages = SQ.stages.filter((x) => x.name !== s.stage).concat({ name: s.stage, cols: out.cols, n: out.rows.length, does: s.ask.replace(/^Stage \w+: /, "") }); }
+const lastStep = (t) => !t.steps || t.steps.slice(SQ.sub + 1).every((s) => s.given);
+// the review pile: every passed step that's due, on real days. No cap: it takes as long as the pile
+function startReview() {
+  const ids = dueNow(); if (!ids.length) return;
+  Object.assign(SQ, { mode: "review", queue: ids, view: "rep", revN: 0, revClean: 0, revTotal: ids.length, requeued: [] }); newRep(); sqlDraw();
+}
+function reviewDone(clean) {
+  const id = SQ.rep.part, srs = O.sql._srs = O.sql._srs || {};
+  const retry = SQ.mode === "review" && SQ.requeued.includes(id) && SQ.retrying === id;   // the same-day retry of a miss: practice, the miss stands
+  if (!retry) srs[id] = Q.schedule(srs[id] || Q.newCard(TODAY()), clean, TODAY());
+  SQ.revN++; if (clean) SQ.revClean++;
+  // a miss comes back once at the end of the pile, the same day
+  if (!clean && SQ.mode === "review" && !SQ.requeued.includes(id)) { SQ.requeued.push(id); SQ.queue.push(id); SQ.revTotal++; }
+  save();
+}
+// the request being answered: the rep itself, or the current step of a chain
+const cur = () => SQ.rep.steps ? SQ.rep.steps[SQ.sub] : SQ.rep;
+// a peek is help, except on a guided or hinted run of a chain, where the support is the point
+const isHelp = (t) => t.kind === "extend" || (SQ.peek && !(t.mode === "guided" || t.mode === "hinted"));
+const FAMILY = { select: "select", where: "where", andor: "where", inlike: "where", order: "order", agg: "agg", distinct: "agg", group: "group", having: "group",
+  join: "select", left: "select", nulls: "where", never: "select", case: "agg", dates: "where", subquery: "order", cte: "group", window: "order", lag: "order", messy: "where" };
+const CL_NAME = { where: "WHERE", order: "ORDER BY · LIMIT", andor: "AND · OR", inlike: "IN · BETWEEN · LIKE", agg: "a total", distinct: "DISTINCT", group: "GROUP BY", having: "HAVING",
+  join: "JOIN … ON", left: "LEFT JOIN", nulls: "IS NULL · COALESCE", case: "CASE", dates: "dates", subquery: "( SELECT … )", cte: "WITH", window: "OVER ( … )", lag: "LAG · LEAD", messy: "LOWER · TRIM · NULLIF" };
+const CL_ORDER = ["cte", "join", "left", "where", "andor", "inlike", "nulls", "messy", "dates", "subquery", "case", "agg", "distinct", "group", "having", "window", "lag", "order"];
+const clauseTags = (q) => `<span class="tags">${Q.clauses(q).split("+").filter(Boolean).sort((a, b) => CL_ORDER.indexOf(a) - CL_ORDER.indexOf(b)).map((k) => `<span class="ck ck-${FAMILY[k] || k}">${CL_NAME[k] || k}</span>`).join("")}</span>`;
+const MODE_NOTE = { guided: "Guided run. Each step names its clauses, and the casebook is open.", hinted: "Hinted run. Tab shows each step's clauses and the casebook, free.",
+  solo: "Solo run. Tab still works, but a peek means this run won't count." };
+// the clause-by-clause replay (sql.mjs stages): rows left after each step, yours next to the one the request wanted
+function replayHTML(mineQ, wantQ) {
+  const count = (q) => { const st = q && Q.stages(q); if (!st) return null; return Object.fromEntries(st.map((x) => { try { const k = run(x.sql).rows.length; return [x.step, `${k} ${k === 1 ? x.unit.slice(0, -1) : x.unit}`]; } catch (e) { return [x.step, "–"]; } })); };
+  const a = count(mineQ), b = count(wantQ); if (!b) return "";
+  const steps = ["FROM", "WHERE", "GROUP BY", "HAVING", "SELECT", "ORDER BY", "LIMIT"].filter((k) => (a && k in a) || k in b);
+  const off = a && steps.find((k) => a[k] !== b[k]);
+  return `<div class="replay"><b>Step by step, in the order SQL runs it</b><table><tr><th></th>${a ? "<th>Yours</th>" : ""}<th>${a ? "Wanted" : "This query"}</th></tr>${steps.map((k) =>
+    `<tr class="${k === off ? "off" : ""}"><td>${k}</td>${a ? `<td>${a[k] || "skipped"}</td>` : ""}<td>${b[k] || "skipped"}</td></tr>`).join("")}</table>
+    ${a ? `<small>${off ? `Your rows went off at <b>${off}</b>.` : "Same counts at every step, so the difference is in the values: check the columns and the values in your tests."}</small>` : ""}</div>`;
+}
+const replayOn = (id) => Q.PARTS.findIndex((p) => p.id === id) >= Q.PARTS.findIndex((p) => p.id === "runorder");
+// the request with each phrase coloured by the clause it becomes (Extend reps)
+function markedAsk(t) {
+  let h = esc(t.ask);
+  for (const [ph, c] of t.marks || []) h = h.replace(esc(ph), `<span class="ck ck-${FAMILY[c] || c}">${esc(ph)}</span>`);
+  return h;
+}
+// Frank's casebook: every phrase-to-clause entry from the parts up to today's
+function casebookHTML(upto) {
+  const ids = Q.PARTS.slice(0, Q.PARTS.findIndex((p) => p.id === upto) + 1).map((p) => p.id).reverse();   // today's part on top
+  return `<div class="casebook"><b>Frank's casebook</b><ul>${ids.flatMap((id) => (Q.CASEBOOK[id] || []).map(([a, b]) => `<li><span>${a}</span><code>${b}</code></li>`)).join("")}</ul></div>`;
+}
+function ladder(part, st) {
+  const L = Q.levels(part.id), at = Q.tierOf(part.id, st), R = Q.rule(part.id);
+  const how = `${R.climb === 1 ? "One clean run" : `${R.climb} clean in a row`} moves you up. At the top, ${R.pass[0]} clean of your last ${R.pass[1]} passes${part.top === 4 ? ", with a trap among them" : ""}.`;
+  return `<span class="ladder" title="${how}">${L.map((n) => `<i class="${n < at ? "done" : n === at ? "on" : ""}">${Q.tierName(part.id, n)}</i>`).join("")}</span>`;
+}
+// a case's name already starts with its label ("Case C: the welcome code")
+const ttl = (part) => part.name.startsWith(part.label) ? part.name : `${part.label} · ${part.name}`;
+const revBtn = () => { if (SQ.mode !== "lesson") return ""; const n = dueNow().length; return n ? `<button class="x rev" id="rev" type="button" title="Steps you passed, due for review today. Real days, not game days.">Review · ${n} due</button>` : ""; };
+// today's lesson, open again from a request (Brent, 2026-10-27). Mid-request it shows the example, so it counts as a peek
+const lessonBtn = () => SQ.view === "lesson" && SQ.back ? `<button class="x" id="backreq" type="button">Back to the request · Enter</button>` : SQ.mode === "lesson" && SQ.view === "rep" && SQ.rep ? `<button class="x" id="seelesson" type="button" title="${SQ.done || SQ.rep.practice || SQ.peek || ["guided", "hinted"].includes(SQ.rep.mode) ? "Free right now." : "Mid-request it counts as a peek, like Tab. Free between requests."}">See the lesson again</button>` : "";
+const header = (t) => `<header><b>Frank Mallory's desk</b><span class="tool">SQL · ${t}</span><span class="sp"></span>${lessonBtn()}${revBtn()}${FULL}<button class="x" id="close" type="button">Step away · Esc</button></header>`;
+function resultHTML(o, cap = 15, stamp = "") {
   if (!o) return "";
   if (o.err) return `<div class="res"><div class="err">${esc(o.err)}</div></div>`;
   const rows = o.rows.slice(0, cap);
-  return `<div class="res"><table><tr>${o.cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>${rows.map((r) => `<tr>${r.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</table>
+  return `<div class="res${stamp ? " stamped" : ""}">${stamp ? `<span class="stamp ${stamp === "CLOSED" ? "closed" : ""}">${stamp}</span>` : ""}<table><tr>${o.cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>${rows.map((r) => `<tr>${r.map((v) => `<td>${esc(typeof v === "number" && !Number.isInteger(v) ? +v.toFixed(2) : v)}</td>`).join("")}</tr>`).join("")}</table>
     <div class="cnt">${o.rows.length.toLocaleString()} row${o.rows.length === 1 ? "" : "s"}${o.rows.length > cap ? `, first ${cap} shown` : ""}</div></div>`;
 }
-const cardsHTML = () => `<div class="cork"><button class="pop" id="popboard" type="button" title="Float the board in its own small window">${BOARD ? "⧉ Bring it back" : "⧉ Pop out"}</button><svg class="strings" id="strings"></svg>${Object.entries(Q.TABLES).map(([t, v], i) =>
-  `<div class="bcard ${i ? "b2" : ""}" id="bcard${i}"><span class="pin"></span><h4>${t}</h4><ul>${v.cols.map(([c, ty]) => `<li data-c="${c}">${c}<i>${ty}</i></li>`).join("")}</ul><div class="bsmall">${v.note}</div></div>`).join("")}</div>`;
+// the tables this request uses, open; the rest fold into chips he can open (the new-board step shows every card)
+function shownTables() {
+  const all = Object.keys(Q.tablesFor(act())), t = SQ.rep; if (!t || SQ.view !== "rep" || act() === "newboard") return all;
+  // a step: the part he types. A sum carried from earlier steps reads no table, so it keeps the chain's tables up
+  const c = cur(); let used = Q.tablesIn((c && (c.show || c.sql)) || t.show || t.sql || "");
+  if (!used.length && t.steps && !SQ.stages.length) used = Q.tablesIn(t.steps.map((x) => x.show || x.sql).join(" "));
+  return used.length || SQ.stages.length ? all.filter((x) => used.includes(x) || SQ.unfold.includes(x)) : all;
+}
+const cardsHTML = () => { const open = shownTables(), folded = Object.keys(Q.tablesFor(act())).filter((x) => !open.includes(x));
+  return `<div class="cork ${Q.isBig(act()) ? "big" : ""}"><button class="pop" id="popboard" type="button" title="Float the board in its own small window">${BOARD ? "⧉ Bring it back" : "⧉ Pop out"}</button><svg class="strings" id="strings"></svg>${SQ.stages.map((x) =>
+  `<div class="bcard stage" id="bcard-${x.name}"><span class="pin"></span><h4>${esc(x.name)} <small>stage</small></h4><ul>${x.cols.map((c) => `<li data-c="${esc(c)}">${esc(c)}</li>`).join("")}</ul><div class="bsmall">${x.n} rows · ${esc(x.does)}</div></div>`).join("")}${Object.entries(Q.tablesFor(act())).filter(([t]) => open.includes(t)).map(([t, v], i) =>
+  `<div class="bcard ${i % 2 ? "b2" : ""}" id="bcard-${t}"><span class="pin"></span><h4>${t}</h4><ul>${Q.colsFor(t, act()).map(([c, ty]) => `<li data-c="${c}">${c}<i>${ty}</i></li>`).join("")}</ul><div class="bsmall">${v.note}</div></div>`).join("")}${folded.length ? `<div class="folded">${folded.map((x) => `<button type="button" class="tchip" data-unfold="${x}" title="Not in this request. Click to pin it up anyway.">${x}</button>`).join("")}</div>` : ""}</div>`; };
 const noirHTML = (title, line) => `<div class="col noircol"><div class="panel"><canvas id="noir" width="160" height="90"></canvas></div><div class="dbub"><div class="ctitle">${esc(title)}</div><div class="dsay" id="dsay"></div><div class="dname">F. MALLORY · DATA DETECTIVE</div></div></div>`;
-function pips(st) {
-  const solo = st.reps.filter((x) => !x.practice && !x.help).slice(-Q.PASS[1]);
-  return `<span class="pips" title="Your last ${Q.PASS[1]} reps without help. ${Q.PASS[0]} clean, ending on a clean one, passes.">${[...Array(Q.PASS[1])].map((_, i) => { const r = solo[i]; return `<i class="${r ? (r.clean ? "g" : "b") : ""}"></i>`; }).join("")}</span>`;
+// what's left on this step: "N more clean to move up", and at the top the runs the pass rule reads as pips
+function toGoHTML(part, st) {
+  const g = Q.toGo(part.id, st); if (!g) return "";
+  const R = Q.rule(part.id), pips = g.top ? `<span class="pips" title="Your last ${g.size} runs at the top without help. ${R.pass[0]} clean, ending on a clean one, passes.">${[...Array(g.size)].map((_, i) => `<i class="${i < g.slots.length ? (g.slots[i] ? "g" : "b") : ""}"></i>`).join("")}</span>` : "";
+  return `${pips}<span class="togo">${g.need} more clean ${g.top ? "to pass" : "to move up"}${g.trap ? (part.kind === "pipe" ? ", one from the brief" : ", one a trap") : ""}</span>`;
 }
 function sqlDraw() {
-  const id = lessonId("sql"), part = id && Q.PART[id];
+  const id = act(), part = id && Q.PART[id];
+  if (SQ.view === "recap") {   // previously at Fernhill
+    const rows = SQ.queue.map((x) => { const last = (O.sql._srs && O.sql._srs[x] && O.sql._srs[x].seen) || O.sql[x].last, d = last ? Q.daysBetween(last, TODAY()) : 0;
+      return `<li><b>${esc(Q.PART[x].label)} · ${esc(Q.PART[x].name)}</b> <small>last touched ${d} days ago</small></li>`; }).join("");
+    const today = Q.PART[SQ.recapFor];
+    sheet().innerHTML = header("Previously at Fernhill") + `<div class="body one"><div class="main"><div class="scene">${noirHTML("Previously at Fernhill", "")}<div class="col lessoncol"><div class="qn">Before today's ${today.kind === "pipe" ? "pipeline" : "step"}</div><div class="word">${esc(today.name)}</div>
+      <p>Today's work leans on ${SQ.queue.length === 1 ? "a part" : "parts"} you haven't touched in a while. One request each, then the lesson.</p><ul class="lines">${rows}</ul></div></div>
+      <div class="acts"><button class="go" id="next" type="button">Warm up <span class="kbd">Enter</span></button><button class="x" id="skip" type="button">Skip to the lesson</button></div></div></div>`;
+    $("close").onclick = closeDesk; $("next").onclick = () => { SQ.view = "rep"; newRep(); sqlDraw(); }; $("skip").onclick = endRecap;
+    typeLine("Previously at Fernhill. You'll need these today. Let's see if they're still sharp."); grab(); return;
+  }
+  if (SQ.view === "revdone") {
+    const next = Object.values(O.sql._srs || {}).map((c) => c.due).sort()[0];
+    sheet().innerHTML = header("Review") + `<div class="body one"><div class="main"><div class="scene">${noirHTML("The files", "")}<div class="col lessoncol"><div class="qn">Review done</div><div class="word">${SQ.revN} reviewed</div>
+      <div class="sumrow"><div><b>${SQ.revN}</b><span>requests</span></div><div><b>${SQ.revClean}</b><span>clean, no help</span></div></div>
+      <p>${next ? `Next review due ${esc(Q.nice(next))}. ` : ""}A clean one waits longer next time (3, 8, 20, then 50 days). A miss comes back tomorrow.</p></div></div>
+      <div class="acts"><button class="go" id="next" type="button">${lessonId("sql") ? "Back to today's step" : "Back to the office"} <span class="kbd">Enter</span></button></div></div></div>`;
+    $("close").onclick = closeDesk; $("next").onclick = () => { SQ.mode = "lesson"; SQ.part = lessonId("sql"); if (!SQ.part) return closeDesk(); SQ.view = sqlSt(SQ.part).reps.length ? "rep" : "lesson"; if (SQ.view === "rep") newRep(); sqlDraw(); };
+    typeLine(SQ.revClean === SQ.revN ? "Every file still holds. Good. The ones you don't touch are the ones that rot." : "A couple of those had gone soft. They'll be back tomorrow. That's the point."); grab(); return;
+  }
   if (SQ.view === "later") {
     sheet().innerHTML = header("Nothing new") + `<div class="body one"><div class="main"><div class="scene">${noirHTML("Not written yet", "")}</div>
-      <p class="later">You've passed every SQL part Frank has written: ${Q.PARTS.map((p) => p.name).join(", ")}. The next one, ${esc(Q.LATER[0])}, isn't written yet, so today's SQL counts as done.</p>
-      <button class="go" id="next" type="button">Back to the office <span class="kbd">Enter</span></button></div></div>`;
+      <p class="later">You've passed every SQL step Frank has written so far, all ${Q.PARTS.length} of them, up to ${esc(Q.PARTS.at(-1).name)}. The next one, ${esc(Q.LATER[0])}, isn't written yet, so today's SQL counts as done.</p>
+      <button class="go" id="next" type="button">Back to the office <span class="kbd">Enter</span></button>${dueNow().length ? `<button class="x" id="rev" type="button">Review · ${dueNow().length} due</button>` : ""}</div></div>`;
     $("close").onclick = closeDesk; $("next").onclick = closeDesk; typeLine("That case file's still in the typewriter, kid. Come back when it isn't."); grab(); return;
   }
   const st = sqlSt(part.id);
   if (SQ.view === "lesson") {
-    const ex = run(part.lesson.example);
-    sheet().innerHTML = header(`Part ${part.n} · ${part.name}`) + `<div class="body"><div class="main">
-      <div class="scene">${noirHTML(`Part ${part.n}: ${part.name}`, part.lesson.frank)}<div class="col lessoncol"><div class="qn">Today's new word</div><div class="word">${esc(part.word)}</div>
-        <ul class="lines">${part.lesson.lines.map((l) => `<li>${l}</li>`).join("")}</ul></div></div>
-      <div class="qn">An example, on Fernhill's tables</div><div class="example big">${esc(part.lesson.example)}</div>${resultHTML(ex, 8)}</div>
-      <div class="side">${cardsHTML()}<p class="done">Next: ${Q.PRACTICE} practice requests with the example beside you, then the example hides behind <span class="kbd dk">Tab</span>. ${Q.PASS[0]} clean of your last ${Q.PASS[1]} passes the part.</p>
-        <button class="go" id="next" type="button">Start practice <span class="kbd">Enter</span></button></div></div>`;
-    $("close").onclick = closeDesk; $("next").onclick = () => { SQ.view = "rep"; newRep(); sqlDraw(); };
+    const L = part.lesson, R = Q.rule(part.id), o = L.owner && (part.owner || (part.tpl[0](Q.rng(1)).who)), climb = Q.levels(part.id).map((n) => Q.tierName(part.id, n).toLowerCase()).join(", then ");
+    const plan = part.kind === "case" ? `Up to three runs: ${climb}. One clean run moves you to the next, and a miss means another run at the same level. A clean solo run closes the case${part.gate ? ` and opens ${part.gate}` : ""}.`
+      : `${R.practice ? `Next: ${R.practice} practice requests with the example beside you. Then the` : "The"} requests climb: ${climb}. ${R.climb === 1 ? "One clean" : "Two clean in a row"} moves you up.`;
+    const shown = L.build ? `<div class="qn">Built up one step at a time</div>${L.build.map(([note, q]) => `<div class="bstep"><small>${esc(note)}</small><div class="example">${esc(q)}</div>${resultHTML(run(q), 4)}</div>`).join("")}`
+      : `<div class="qn">An example, on Fernhill's tables</div><div class="example big">${esc(L.example)}</div>${resultHTML(run(L.example), 8)}`;
+    sheet().innerHTML = header(ttl(part)) + `<div class="body"><div class="main">
+      <div class="scene">${noirHTML(`${part.label}: ${part.name}`, L.frank)}<div class="col lessoncol"><div class="qn">${part.kind === "case" ? "The case" : part.kind === "metric" ? "Today's number" : part.kind === "pipe" ? "Today's pipeline" : "Today's new word"}</div><div class="word">${esc(part.word)}</div>
+        <ul class="lines">${L.lines.map((l) => `<li>${l}</li>`).join("")}</ul></div></div>
+      ${o && CAST[o] ? `<div class="ownersay">${pf(o, "calm", 40)}<div><b>${CAST[o].name}</b> <small>· ${ROLE[o]}</small><p>${esc(L.owner)}</p></div></div>` : ""}
+      ${shown}</div>
+      <div class="side">${cardsHTML()}<p class="done">${plan} The example and Frank's casebook hide behind <span class="kbd dk">Tab</span>.</p>
+        <button class="go" id="next" type="button">${SQ.back ? "Back to the request" : part.kind === "case" ? "Open the case" : R.practice ? "Start practice" : "Start"} <span class="kbd">Enter</span></button></div></div>`;
+    $("close").onclick = closeDesk; $("next").onclick = () => { SQ.view = "rep"; if (SQ.back) SQ.back = false; else newRep(); sqlDraw(); }; if ($("backreq")) $("backreq").onclick = () => $("next").click();
     typeLine(part.lesson.frank); glow(part.lesson.example); requestAnimationFrame(() => stringUp(false)); grab(); return;
   }
   if (SQ.view === "pass") {
     const ok = st.reps.filter((r) => r.ok).length;
-    sheet().innerHTML = header(`Part ${part.n} · ${part.name}`) + `<div class="body one"><div class="main"><div class="scene">${noirHTML("Case closed", "")}<div class="col lessoncol"><div class="qn">Part passed</div><div class="word">${esc(part.name)}</div>
+    sheet().innerHTML = header(ttl(part)) + `<div class="body one"><div class="main"><div class="scene">${noirHTML("Case closed", "")}<div class="col lessoncol"><div class="qn">${part.kind === "case" ? `Case closed${part.gate ? `. ${part.gate} is open` : ""}` : `${part.kind === "metric" ? "Step" : "Part"} passed`}</div><div class="word">${esc(part.name)}</div>
       <div class="sumrow"><div><b>${st.reps.length}</b><span>requests</span></div><div><b>${ok}</b><span>right</span></div><div><b>${st.reps.filter((r) => r.clean && !r.help).length}</b><span>clean, no help</span></div></div></div></div>
       <div class="acts"><button class="go" id="next" type="button">Back to the office <span class="kbd">Enter</span></button><button class="x" id="more" type="button">Keep practising</button></div></div></div>`;
     $("close").onclick = closeDesk; $("next").onclick = closeDesk; $("more").onclick = () => { SQ.view = "rep"; newRep(); sqlDraw(); };
     typeLine(`${part.name}. Yours now. Nobody can take that off you, not even the auditors.`); grab(); return;
   }
   // a request
-  const t = SQ.rep, who = t.who in CAST ? t.who : "dana", face = SQ.done ? (SQ.ok ? "smile" : "worried") : SQ.fb ? "worried" : "calm";
-  const said = SQ.done ? (SQ.ok ? "Perfect, thank you!" : "Hmm. That's not quite what I needed?") : t.ask;
-  const frank = SQ.done && SQ.ok ? CLOSERS[st.reps.length % CLOSERS.length] : SQ.fb || (SQ.done && !SQ.ok) ? STUMPED[st.reps.length % STUMPED.length] : part.lesson.frank;
-  const showEx = t.practice || SQ.peek, n = st.reps.length + (SQ.done ? 0 : 1);
-  sheet().innerHTML = header(`Part ${part.n} · ${part.name}`) + `<div class="body"><div class="main">
+  const t = SQ.rep, c = cur(), chain = !!t.steps, who = t.who in CAST ? t.who : "dana", face = SQ.done ? (SQ.ok ? "smile" : "worried") : SQ.fb || SQ.subFail ? "worried" : "calm";
+  const said = SQ.done ? (SQ.ok ? echo(SQ.out, st.reps.length) : "Hmm. That's not quite what I needed.") : t.ask;
+  const firstTrap = SQ.mode === "lesson" && t.tier === 4 && part.kind !== "pipe" && !st.reps.some((x) => x.tier === 4);
+  const frank = SQ.done && SQ.ok ? closer(part, st.reps.length) : SQ.slipped && !SQ.done ? "A typo. Everybody fat-fingers one. Look where it's marked." : SQ.fb || SQ.subFail || (SQ.done && !SQ.ok) ? STUMPED[st.reps.length % STUMPED.length]
+    : t.kind === "extend" ? t.hint : chain && t.mode === "guided" && c.hint ? c.hint
+    : t.kind === "predict" ? "Don't run it. Read it. Count what's left after each step, in the order SQL runs it."
+    : t.kind === "fill" ? "One piece is missing. Find the words in the request that name it."
+    : SQ.mode === "review" ? "From the files. You closed this one a while back. Let's see if it stuck."
+    : SQ.mode === "recap" ? "Previously at Fernhill. You'll want this one sharp today."
+    : firstTrap ? "This one's got a catch, kid. It'll run. It'll give you rows. They'll be the wrong rows." : part.lesson.frank;
+  const name = CAST[who].name;
+  const kindNote = t.kind === "extend" ? `<div class="guide"><b>${t.intro ? "First look." : "New angle."}</b> ${esc(t.hint)} The query in the box answers part of it. Add the rest. The colours show which words become which clause.</div>`
+    : t.kind === "fix" ? (t.tier === 4 && t.foreign ? `<div class="guide"><b>A first try at the SQLite version</b> is in the box. It runs, but the rows are wrong for the request. Fix it.</div>`
+      : t.tier === 4 ? `<div class="guide"><b>${name}'s query</b> is in the box. It runs, but the rows are wrong for the request. Fix it.</div>`
+      : `<div class="guide"><b>Scrambled.</b> Every clause is there, in the wrong order. Put them in the order SQL needs.</div>`)
+    : t.kind === "fill" ? `<div class="guide"><b>Fill the blank.</b> Replace <code>____</code> with the missing piece, then run it.</div>`
+    : t.kind === "predict" ? `<div class="guide"><b>Predict.</b> Read the query, then type one number. It runs after you answer.</div>`
+    : t.mode === "pinned" ? `<div class="guide"><b>Pinned.</b> You built ${t.steps.filter((s) => s.given).map((s) => `<code>${s.stage}</code>`).join(", ")} clean before, so ${t.steps.filter((s) => s.given).length > 1 ? "they're" : "it's"} on the board. Type the rest: any new stages as <code>name AS ( … )</code>, then the final SELECT.</div>`
+    : chain && part.kind === "pipe" ? `<div class="guide"><b>Pipeline${t.mode === "guided" ? ", one stage blank" : ", stage by stage"}.</b> For a stage, type only its query: the desk wraps it as <code>name AS ( … )</code> after the stages above and pins its rows to the board. The final SELECT reads the stages. ${t.mode === "hinted" ? "Tab shows each step's clauses, free." : ""}</div>`
+    : t.plan ? `<div class="guide"><b>From the plan.</b> Write the whole query: <code>WITH</code> each stage on the plan, in order, then the final SELECT. Run a stage alone first if it helps: <code>WITH v AS ( … ) SELECT * FROM v</code>.</div>`
+    : part.kind === "pipe" ? `<div class="guide"><b>From the brief.</b> ${SQ.myPlan ? "Now write the whole WITH query, stage by stage as you planned." : "First the plan: one line per stage, a name and what one row is (<code>per: one row per buyer</code>), the final SELECT last. Shift+Enter for a new line, Enter when it's done."}</div>`
+    : chain ? `<div class="guide"><b>${t.mode === "guided" ? (part.kind === "case" ? MODE_NOTE.guided : "Guided. Each step has a hint, and each answer feeds the next.") : t.mode === "hinted" ? MODE_NOTE.hinted : part.kind === "case" ? MODE_NOTE.solo : "On your own. Each answer feeds the next."}</b></div>` : "";
+  const tagsOn = t.mode === "guided" || SQ.peek;
+  const chainHTML = chain ? `<ol class="chain">${t.steps.map((s, i) => { const state = i < SQ.sub ? "done" : i === SQ.sub ? "on" : "todo";
+    return `<li class="${state}${s.given ? " given" : ""}"><span>${esc(s.ask)}</span>${s.given ? `<div class="example">${esc(s.show)}</div>` : ""}${state === "on" && tagsOn ? clauseTags(s.show || s.sql) : ""}${state === "on" && t.mode === "guided" && s.hint ? `<small class="hint">${esc(s.hint)}</small>` : ""}${state === "done" && SQ.subs[i] ? `<div class="mini">${resultHTML(SQ.subs[i].out, 6)}</div>` : ""}</li>`; }).join("")}</ol>` : "";
+  const showEx = t.practice || SQ.peek || t.mode === "guided", n = st.reps.length + (SQ.done ? 0 : 1), free = t.mode === "guided" || t.mode === "hinted";
+  const ask = chain ? chainHTML : `<div class="ask"><b>${t.kind === "extend" ? markedAsk(t) : esc(t.ask)}</b></div>${t.plan ? `<ol class="plan">${t.plan.map(([n, d]) => `<li><code>${esc(n)}</code> ${esc(d)}</li>`).join("")}</ol>` : ""}`;
+  const locked = SQ.done || SQ.subFail, outLabel = SQ.subFail ? "What that step wanted" : SQ.done && !SQ.ok && t.kind === "predict" ? "What the request wanted" : t.kind === "predict" ? "When it runs" : "Your result";
+  // a pipeline from the brief opens with a typed plan (batch 5)
+  const needPlan = part.kind === "pipe" && !chain && !t.plan && t.kind === "write" && !SQ.myPlan && !SQ.done;
+  const missed = !!SQ.tries || (SQ.done && !SQ.ok), stamp = SQ.done && SQ.ok ? (part.kind === "case" ? "CLOSED" : "MATCH") : "";
+  const replay = (SQ.wrongQ && replayOn(part.id) ? replayHTML(SQ.wrongQ, c.sql) : "") + (t.kind === "predict" && SQ.done ? replayHTML(null, t.show) : "");
+  const verdict = SQ.subFail ? `<div class="fb bad"><b>Here's that step.</b> ${esc(SQ.why || "")}<div class="example">${esc(c.sql)}</div><small>Its rows are below. Carry on with them.</small></div>
+      <button class="go" id="next" type="button">Carry on <span class="kbd">Enter</span></button>`
+    : SQ.done ? `<div class="fb ${SQ.ok ? "good" : "bad"}"><b>${SQ.ok ? (chain ? "Every step right." : t.kind === "predict" ? "Right number." : "Right rows.") : t.kind === "predict" ? "Here's the number." : "Typed right."}</b> ${SQ.ok ? (SQ.swapped ? "Your columns came in a different order. Fine here. The request's order is the usual habit. " : "") + (SQ.tries || !SQ.subClean ? (t.kind === "predict" ? "Right, on the second try." : "Right, after a miss. A twin of it comes next.") : "Clean.") + (SQ.climbed ? ` <b class="up">Up a tier: ${Q.tierName(part.id, SQ.climbed)}.</b>` : "")
+        : t.kind === "predict" ? esc(SQ.why || "") : "It counts as a miss. A twin of it comes next, and it comes back once more later."}${!SQ.ok && t.kind === "predict" ? `<div class="example">${esc(t.show)}</div>` : ""}${t.trap ? `<div class="trapwhy"><b>The catch:</b> ${t.trap}</div>` : ""}${SQ.ok && part.kind === "case" ? `<div class="closed"><b>Case closed.</b> ${esc(answerOf(SQ.out))}</div>` : ""}</div>
+      <button class="go" id="next" type="button">Next <span class="kbd">Enter</span></button>`
+    : `<p class="done"><span class="kbd dk">Enter</span> runs it. <span class="kbd dk">Shift</span>+<span class="kbd dk">Enter</span> for a new line.</p>
+      ${SQ.slipped ? `<div class="fb slip"><b>A typo, not a miss.</b> ${SQ.fb}${SQ.slip ? `<div class="example">${markSnip(SQ.text, SQ.slip)}</div>` : ""}${SQ.habit ? `<small>${esc(SQ.habit)}</small>` : ""}</div>` : ""}
+      ${t.kind === "predict" ? (SQ.fb && !SQ.slipped ? `<div class="fb bad">${SQ.fb} <small>Try ${SQ.tries + 1} of 2.</small></div>` : "")
+        : SQ.tries ? `${SQ.guessing || SQ.hint ? "" : `<div class="fb bad">${SQ.fb}</div>`}${ladderHTML(t, c)}${SQ.guessing ? "" : hintButton()}` : ""}
+      ${SQ.shaky ? `<p class="shaky">${esc(SQ.shaky)}</p>` : ""}
+      ${SQ.sleepy ? `<div class="fb bad"><b>Ten misses on this one today.</b> Frank: "Sleep on it, kid." Tomorrow it opens with the worked example. <div class="row"><button type="button" id="stopday">Stop for today</button> <button type="button" id="keepgoing">Keep going</button></div></div>` : ""}`;
+  const revQn = SQ.mode === "lesson" ? "" : `${SQ.mode === "review" ? "Review" : "Previously at Fernhill"} ${Math.min(SQ.revN + 1, SQ.revTotal)} of ${SQ.revTotal} · ${esc(part.label)} · ${esc(part.name)}`;
+  sheet().innerHTML = header(`${SQ.mode === "review" ? "Review · " : ""}${ttl(part)}`) + `<div class="body"><div class="main">
       <div class="scene"><div class="col"><div class="panel corpimg">${pf(who, face, 84).replace('class="pix"', 'class="pix inpanel"')}</div>
-          <div class="cbub ${SQ.done ? (SQ.ok ? "react" : "puzzled") : SQ.fb ? "puzzled" : ""}"><div class="cwho">${CAST[who].name} <small>· ${ROLE[who]}</small></div>${esc(said)}</div></div>
-        ${noirHTML(t.practice ? "Practice" : `Request ${n}`, frank)}</div>
-      <div class="qn">${t.practice ? `Practice ${n} of ${Q.PRACTICE} · the example is on the right` : `Request ${n}`} ${t.practice ? "" : pips(st)}</div>
-      <div class="ask"><b>${esc(t.ask)}</b></div>
-      <textarea class="sql" id="sql" spellcheck="false" autocomplete="off" placeholder="SELECT …" ${SQ.done ? "disabled" : ""}>${esc(SQ.text)}</textarea>
-      ${SQ.out ? `<div class="qn">${SQ.done && !SQ.ok ? "What the request wanted" : "Your result"}</div>` : ""}${resultHTML(SQ.out)}</div>
-    <div class="side">${SQ.done ? `<div class="fb ${SQ.ok ? "good" : "bad"}"><b>${SQ.ok ? "Right rows." : "Here's one answer."}</b> ${SQ.ok ? (SQ.swapped ? "Your columns came in a different order. Fine here. The request's order is the usual habit." : SQ.tries ? "Right on the second try." : "Clean.") : esc(SQ.why || "")}${SQ.ok ? "" : `<div class="example">${esc(t.sql)}</div>`}</div>
-        <button class="go" id="next" type="button">Next <span class="kbd">Enter</span></button>`
-      : `<p class="done"><span class="kbd dk">Enter</span> runs it. <span class="kbd dk">Shift</span>+<span class="kbd dk">Enter</span> for a new line.</p>
-        ${SQ.fb ? `<div class="fb bad">${SQ.fb} <small>Try ${SQ.tries + 1} of 2.</small></div>` : ""}`}
+          <div class="cbub ${SQ.done ? (SQ.ok ? "react" : "puzzled") : SQ.fb ? "puzzled" : ""}"><div class="cwho">${name} <small>· ${ROLE[who]}</small></div>${esc(said)}</div></div>
+        ${noirHTML(revQn ? (SQ.mode === "review" ? "From the files" : "Previously") : t.practice ? "Practice" : chain ? `${t.mode === "pinned" ? "Request" : part.kind === "case" || part.kind === "pipe" ? "Run" : "Chain"} ${n}` : `Request ${n}`, frank)}</div>
+      <div class="qn">${revQn ? `${revQn}${chain ? ` · step ${Math.min(SQ.sub + 1, t.steps.length)} of ${t.steps.length}` : ""}` : t.practice ? `Practice ${n} of ${Q.rule(part.id).practice} · the example is on the right` : chain ? `${t.mode === "pinned" ? "Request" : part.kind === "case" || part.kind === "pipe" ? "Run" : "Chain"} ${n} · step ${Math.min(SQ.sub + 1, t.steps.length)} of ${t.steps.length}` : `Request ${n}`} ${t.practice || revQn ? "" : ladder(part, st) + toGoHTML(part, st)}</div>
+      ${ask}${SQ.done ? "" : kindNote}${t.kind === "predict" ? `<div class="example">${esc(t.show)}</div>` : ""}${t.foreign ? `<div class="example foreign"><small>${esc(t.foreign[0])}</small>${esc(t.foreign[1])}</div>` : ""}
+      ${needPlan ? `<textarea class="sql plan" id="planbox" spellcheck="false" autocomplete="off" placeholder="per: one row per buyer&#10;final: one row per tier">${esc(SQ.planText || "")}</textarea>${SQ.planWhy ? `<div class="fb bad">${SQ.planWhy}</div>` : ""}` : `${SQ.myPlan ? `<div class="qn">Your plan</div><ol class="plan">${SQ.myPlan.map(([n, d]) => `<li><code>${esc(n)}</code> ${esc(d)}</li>`).join("")}</ol>` : ""}<textarea class="sql" id="sql" spellcheck="false" autocomplete="off" placeholder="${t.kind === "predict" ? "a number" : c.stage ? `SELECT … (the inside of ${c.stage} AS ( … ))` : c.final ? "the final SELECT …" : "SELECT …"}" ${locked ? "disabled" : ""}>${esc(SQ.text)}</textarea>`}
+      ${needPlan ? "" : `<div class="verdict">${verdict}</div>`}
+      ${missed ? replay : ""}${SQ.out ? `<div class="qn">${outLabel}</div>` : ""}${resultHTML(SQ.out, missed ? 5 : 15, stamp)}${missed ? "" : replay}</div>
+    <div class="side">
       ${cardsHTML()}
-      ${showEx ? `<div class="guide"><b>The example.</b> ${part.lesson.lines[0]}<div class="example">${esc(part.lesson.example)}</div><small>For a different request. Swap in what this one asks for.</small></div>`
-        : `<p class="done peek"><span class="kbd dk">Tab</span> peeks at the example. A peek counts as help, so that rep won't count toward the pass.</p>`}</div></div>`;
+      ${showEx ? `<div class="guide"><b>The example.</b> ${part.lesson.lines[0]}<div class="example">${esc(part.lesson.example)}</div><small>For a different request. Swap in what this one asks for.</small></div>${casebookHTML(part.id)}`
+        : `<p class="done peek"><span class="kbd dk">Tab</span> peeks at the example and Frank's casebook${chain ? ", and names this step's clauses" : ""}. ${free ? "Free on this run." : "A peek counts as help, so this one won't count toward the climb."}</p>`}</div></div>`;
   $("close").onclick = closeDesk;
+  if ($("seelesson")) $("seelesson").onclick = () => { if (!SQ.done && !t.practice && !free) SQ.peek = true; SQ.back = true; SQ.view = "lesson"; sqlDraw(); };
   typeLine(frank); requestAnimationFrame(() => stringUp(SQ.ok)); glow(SQ.text || "");
+  const pb = $("planbox");
+  if (pb) { pb.focus(); pb.setSelectionRange(pb.value.length, pb.value.length); pb.oninput = () => { SQ.planText = pb.value; };
+    pb.onkeydown = (e) => { if (e.key === "Escape") { pb.blur(); grab(); return; } if (e.key !== "Enter" || e.shiftKey) return; e.preventDefault();
+      const c = Q.checkPlan(pb.value); if (c.ok) { SQ.myPlan = c.stages; SQ.planWhy = ""; tone(660, 0.05, "triangle", 0.03); } else { SQ.planWhy = c.why; shake(); } sqlDraw(); }; }
   const ta = $("sql");
-  if (ta && !SQ.done) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
-    ta.oninput = () => { SQ.text = ta.value; glow(ta.value); if (Math.random() < 0.5) tone(880 + Math.random() * 200, 0.015, "square", 0.008); };
-    ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sqlRun(); } else if (e.key === "Escape") closeDesk();
+  const grow = () => { if (!ta) return; ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + "px"; }; grow();
+  if (ta && !locked) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    ta.oninput = () => { SQ.text = ta.value; glow(ta.value); grow(); if (Math.random() < 0.5) tone(880 + Math.random() * 200, 0.015, "square", 0.008); };
+    ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sqlRun(); } else if (e.key === "Escape") { ta.blur(); grab(); }
+      else if (e.key === "Tab" && e.shiftKey) { e.preventDefault(); openHint(); }
       else if (e.key === "Tab") { e.preventDefault(); if (!t.practice && !SQ.peek) { SQ.peek = true; sqlDraw(); } } }; }
-  const nx = $("next"); if (nx) { nx.onclick = sqlNext; grab(); }
+  const nx = $("next"); if (nx) { nx.onclick = SQ.subFail ? chainOn : sqlNext; grab(); }
+  const hb = $("hint"); if (hb) hb.onclick = openHint;
+  sheet().querySelectorAll("[data-unfold]").forEach((b) => b.onclick = () => { SQ.unfold.push(b.dataset.unfold); sqlDraw(); });
+  sheet().querySelectorAll("[data-where]").forEach((b) => b.onclick = () => pickWhere(b.dataset.where));
+  if ($("stopday")) $("stopday").onclick = closeDesk;
+  if ($("keepgoing")) $("keepgoing").onclick = () => { SQ.sleepy = false; sqlDraw(); };
 }
 let typer = 0;
 function typeLine(text) {   // Frank types his line out, once per line
@@ -417,30 +630,143 @@ function typeLine(text) {   // Frank types his line out, once per line
   SQ.typed = text; clearInterval(typer); let i = 0; el.textContent = "";
   typer = setInterval(() => { el.textContent = text.slice(0, ++i); if (i % 3 === 0) tone(1400 + Math.random() * 300, 0.012, "square", 0.006); if (i >= text.length) clearInterval(typer); }, 18);
 }
-function glow(q) { const words = new Set((q.toLowerCase().match(/[a-z_]+/g) || [])); sheet().querySelectorAll(".bcard li").forEach((li) => li.classList.toggle("glow", words.has(li.dataset.c))); }
-function stringUp(tight, doc = document) {   // the red string between the two table cards: customer_id to id
-  const svg = doc.getElementById("strings"), a = doc.getElementById("bcard0"), b = doc.getElementById("bcard1"); if (!svg || !a || !b || !a.offsetParent) return;
-  const B = svg.parentElement.getBoundingClientRect(), ra = a.querySelector(".pin").getBoundingClientRect(), rb = b.querySelector(".pin").getBoundingClientRect();
-  const x1 = ra.left + 7 - B.left, y1 = ra.top + 7 - B.top, x2 = rb.left + 7 - B.left, y2 = rb.top + 7 - B.top, my = Math.max(y1, y2) + (tight ? 4 : 30);
+// o.amount lights orders.amount only; a bare name lights every card with it; a folded table lights its chip
+function glow(q) {
+  const { qual, bare } = Q.pointsAt(q);
+  sheet().querySelectorAll(".bcard").forEach((card) => { const t = card.id.slice(6); card.querySelectorAll("li").forEach((li) => li.classList.toggle("glow", bare.has(li.dataset.c) || qual.has(`${t}.${li.dataset.c}`))); });
+  sheet().querySelectorAll(".tchip").forEach((b) => b.classList.toggle("glow", bare.has(b.dataset.unfold)));
+}
+function stringUp(tight, doc = document) {   // the red strings: each key on the board to the column it points at (sql.mjs linksFor)
+  const svg = doc.getElementById("strings"); if (!svg || !svg.parentElement.offsetParent) return;
+  const B = svg.parentElement.getBoundingClientRect(), row = (t, c) => { const e = doc.querySelector(`#bcard-${t} li[data-c="${c}"]`); return e && e.getBoundingClientRect(); };
   svg.setAttribute("class", "strings" + (tight ? " hot" : ""));
-  svg.innerHTML = `<path d="M${x1} ${y1} Q${(x1 + x2) / 2} ${my} ${x2} ${y2}"/><circle cx="${x1}" cy="${y1}" r="3"/><circle cx="${x2}" cy="${y2}" r="3"/>`;
+  svg.innerHTML = Q.linksFor(act()).map(([ft, fc, tt, tc]) => {
+    const a = row(ft, fc), b = row(tt, tc); if (!a || !b) return "";
+    // the pair of row edges closest together, so a string doesn't cross its own card
+    const [x1, x2] = [[a.left, b.left], [a.left, b.right], [a.right, b.left], [a.right, b.right]].sort((p, q) => Math.abs(p[0] - p[1]) - Math.abs(q[0] - q[1]))[0].map((x) => x - B.left);
+    const y1 = a.top + a.height / 2 - B.top, y2 = b.top + b.height / 2 - B.top, bow = (tight ? 6 : 26) * (x1 === x2 ? 1 : 0.6);
+    const cx = (x1 + x2) / 2 + (Math.abs(x1 - x2) < 40 ? (x1 < B.width / 2 ? -bow * 2 : bow * 2) : 0), cy = (y1 + y2) / 2 + bow;
+    return `<path d="M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2}"/><circle cx="${x1}" cy="${y1}" r="3"/><circle cx="${x2}" cy="${y2}" r="3"/>`;
+  }).join("");
 }
+// a wrong query (SQL-MISSES.md): a slip is pointed at and never counts; a concept miss opens the hint ladder, and the
+// request only ends on a right query (typed from the answer if it came to that)
+const TRY0 = () => ({ slipped: false, shaky: "", text: "", out: null, tries: 0, fb: "", hint: 0, avail: 0, diag: null, revealed: false, slip: null, guessing: false, guess: null, wrongQ: null, habit: "", sleepy: false });
+const HABIT = { quotes: "Close every quote the moment you open it.", commas: "Read the column list back: a comma between each, none after the last.", brackets: "Type the ) as soon as you type the (.",
+  names: "Glance at the card before you type a name.", capitals: "Copy values the way the data spells them.", other: "Slow down on the last few characters." };
+const HINT_LABEL = ["Hint: where it went wrong", "Hint: how to check it", "Hint: the piece that's off", "Show me the answer"];
+// from Unit D on, he names where it went wrong before the desk says (the checklist as his own habit)
+const selfCheck = () => Q.PARTS.findIndex((p) => p.id === SQ.part) >= Q.PARTS.findIndex((p) => p.id === "case");
+const twinCheck = (x) => { try { const w = run(x.sql); if (!w.rows.length) return false; if (!x.bad) return true; let b; try { b = run(x.bad); } catch (e) { return true; } return !Q.grade(b, w, x.ordered).ok; } catch (e) { return false; } };
+function slipped(q, s) {
+  const k = Q.slipKind(s.say), n = Q.slipCount(O.sql, k, TODAY());
+  Object.assign(SQ, { slipped: true, fb: s.say, slip: s.at ? q.slice(...s.at) : null, habit: n === 3 ? `Third ${k === "other" ? "" : k + " "}slip today. ${HABIT[k]}` : "" });
+  save(); SND.wrong(); sqlDraw(); shake();
+}
+function openHint() {
+  if (SQ.done || !SQ.tries || SQ.hint >= 4 || SQ.hint >= SQ.avail) return;
+  SQ.hint++; if (SQ.hint === 4) SQ.revealed = true;
+  const rep = SQ.rep, sub = SQ.sub; clearTimeout(SQ.unlockT);
+  // the next rung opens after another try or 20 seconds of looking at this one (racing to the answer cuts learning)
+  if (SQ.hint < 4) SQ.unlockT = setTimeout(() => { if (SQ.rep === rep && SQ.sub === sub && !SQ.done && SQ.avail <= SQ.hint) { SQ.avail = SQ.hint + 1; if (G.desk === "sql") sqlDraw(); } }, 20000);
+  sqlDraw();
+}
+function pickWhere(item) { SQ.guess = item; SQ.guessing = false; SQ.avail = Math.max(SQ.avail, 1); SQ.hint = Math.max(SQ.hint, 1); sqlDraw(); }
 function sqlRun() {
-  const t = SQ.rep, q = SQ.text.trim(); if (!q || SQ.done) return;
-  const st = sqlSt(t.part);
+  if (SQ.subFail) return chainOn();
+  const t = SQ.rep, c = cur(), typed = SQ.text.trim(); if (!typed || SQ.done || SQ.guessing) return;
+  const q = c.stage || c.final ? Q.assemble(c, typed) : typed;   // a pipeline stage runs with the stages before it
+  const st = sqlSt(t.part), want = run(c.sql), last = lastStep(t);
+  SQ.slip = null; SQ.habit = "";
+  if (t.kind === "predict") return predictRun(t, c, q, st, want);
   let mine;
-  try { mine = run(q); } catch (e) { SQ.out = { err: String(e.message || e) }; SQ.fb = Q.slip(q, SQ.out.err); SND.wrong(); sqlDraw(); shake(); return; }
-  const want = run(t.sql), g = Q.grade(mine, want, t.ordered), slip = Q.slip(q);
-  if (g.ok && !slip) {
-    SQ.out = mine; SQ.done = true; SQ.ok = true; SQ.swapped = g.swapped; SND.right();
-    const { justPassed } = Q.record(st, t, true, SQ.tries === 0, SQ.peek); save(); if (justPassed) SQ.justPassed = true;
-    return sqlDraw();
-  }
-  SQ.tries++; SND.wrong(); SQ.out = mine;
-  if (SQ.tries >= 2) { Q.record(st, t, false, false, SQ.peek); save(); Object.assign(SQ, { done: true, ok: false, out: want, why: slip || g.why }); sqlDraw(); shake(); return; }
-  SQ.fb = slip || g.why; sqlDraw(); shake();
+  try { mine = run(q); } catch (e) { const err = String(e.message || e); SQ.out = { err }; return slipped(q, Q.findSlip(q, err) || { say: Q.slip(q, err) }); }
+  let g = Q.grade(mine, want, c.ordered, c.tol), hidden = false;
+  // a slip that still runs: a value one letter off, a missing comma. Never a try
+  if (!g.ok) { const s = Q.findSlip(q, null); if (s && s.at) { SQ.out = mine; return slipped(q, s); } }
+  const style = Q.slip(q); if (g.ok && style) { SQ.out = mine; return slipped(q, { say: style }); }
+  // the grown shop: the same query must also be right on the hidden shop, unless it carries typed numbers
+  if (g.ok && Q.isBig(t.part) && !c.carry) { let h; try { h = Q.gradeHidden(runIn(DBH, q), runIn(DBH, c.sql), c.ordered, c.tol, /\bLIMIT\b/i.test(c.sql)); } catch (e) { h = { ok: false, why: e.message }; }
+    if (!h.ok) { g = { ok: false, why: `Right on these rows, wrong on next month's export (a second shop the desk checks too): ${h.why} A query that fits these rows by luck breaks on new ones.` }; hidden = true; } }
+  if (!g.ok) return conceptMissed(t, c, q, mine, g, hidden, st);
+  SND.right(); Object.assign(SQ, { out: mine, swapped: g.swapped, wrongQ: null, fb: "" });
+  if (SQ.tries || SQ.hint) SQ.subClean = false;
+  if (SQ.revealed) SQ.subMiss = true;
+  if (t.steps) { SQ.subs.push({ out: mine }); pinStage(c, mine); }
+  if (!last) { Object.assign(SQ, TRY0(), { sub: SQ.sub + 1 }); skipGiven(); return sqlDraw(); }
+  SQ.done = true; SQ.ok = !SQ.subMiss; SQ.sub++; skipGiven();
+  const clean = SQ.ok && SQ.subClean;
+  // the clause set, and (clean only) the long WITH stages he built: a later metric Write pins those
+  O.sql._seen = [...new Set([...(O.sql._seen || []), t.set, ...(clean && t.kind === "write" ? Q.stageKeys(t.sql) : [])])];
+  if (SQ.mode !== "lesson") { reviewDone(clean && !isHelp(t)); return sqlDraw(); }
+  const { justPassed, climbed } = Q.record(st, t, SQ.ok, clean, isHelp(t), TODAY());
+  if (justPassed) { SQ.justPassed = true; (O.sql._srs = O.sql._srs || {})[t.part] = Q.newCard(TODAY()); }
+  save(); SQ.climbed = climbed;
+  return sqlDraw();
 }
+function conceptMissed(t, c, q, mine, g, hidden, st) {
+  SND.wrong(); Object.assign(SQ, { out: mine, wrongQ: q, slipped: false });
+  if (SQ.revealed) { SQ.fb = "Not yet. The answer is under the box: type it, or fix yours until it matches."; sqlDraw(); shake(); return; }
+  SQ.tries++; SQ.avail = Math.min(4, SQ.avail + 1);
+  let d = null; if (!hidden) try { d = Q.diagnose(q, c.sql, run, c.ordered); } catch (e) { d = null; }
+  SQ.diag = d || { item: null, say: g.why, diff: Q.rowDiff(mine, run(c.sql)) };
+  // the concept this miss marks: the clause the checklist stopped at, else the step itself
+  const part = d && d.part && Q.PART[d.part] && Q.PARTS.findIndex((p) => p.id === d.part) <= Q.PARTS.findIndex((p) => p.id === t.part) ? d.part : t.part;
+  t.missPart = part;
+  if (SQ.tries === 1) { const res = Q.conceptMiss(O.sql, part, TODAY()); SQ.shaky = res === "noted" ? "" : `${Q.PART[part].name} has tripped you ${res === "refresher" ? "three times" : "twice"} this week. ${res === "refresher" ? "It's in today's review pile." : "It's due for review tomorrow."}`; }
+  // ten misses in one step on one real day: Frank calls it
+  st.missDay = st.missDay && st.missDay.d === TODAY() ? { d: TODAY(), n: st.missDay.n + 1 } : { d: TODAY(), n: 1 };
+  if (st.missDay.n === 10) { SQ.sleepy = true; st.relesson = true; }
+  if (SQ.tries === 1 && selfCheck() && SQ.diag.item) SQ.guessing = true;
+  SQ.fb = g.why; save(); sqlDraw(); shake();
+}
+// a predict rep: one number, two tries, then the number and the query's replay
+function predictRun(t, c, q, st, want) {
+  const g = Q.gradeNumber(q, want);
+  if (g.ok) { SND.right(); Object.assign(SQ, { out: run(t.show), done: true, ok: true }); const clean = SQ.tries === 0;
+    if (SQ.mode !== "lesson") { reviewDone(clean); return sqlDraw(); }
+    const { justPassed, climbed } = Q.record(st, t, true, clean, isHelp(t), TODAY()); if (justPassed) { SQ.justPassed = true; (O.sql._srs = O.sql._srs || {})[t.part] = Q.newCard(TODAY()); } save(); SQ.climbed = climbed; return sqlDraw(); }
+  SQ.tries++; SND.wrong();
+  if (SQ.tries >= 2) {
+    if (SQ.mode !== "lesson") reviewDone(false); else { Q.record(st, t, false, false, isHelp(t), TODAY()); save(); }
+    Object.assign(SQ, { done: true, ok: false, out: run(t.show), why: `It's ${want.rows[0][0]}.` }); sqlDraw(); shake(); return;
+  }
+  SQ.fb = g.why; sqlDraw(); shake();
+}
+// the ladder on screen: the checklist with where it went off, how to check it, the key's piece, the answer
+const hintButton = () => SQ.hint >= 4 ? "" : `<button class="hintbtn" id="hint" type="button" ${SQ.hint < SQ.avail ? "" : "disabled"}>${HINT_LABEL[SQ.hint]} <span class="kbd dk">Shift</span>+<span class="kbd dk">Tab</span></button>${SQ.hint < SQ.avail ? "" : "<small class=\"wait\"> The next hint opens after another try, or in a few seconds.</small>"}`;
+const markSnip = (text, snip) => { const i = text.indexOf(snip); return i < 0 ? `<mark>${esc(snip)}</mark>` : `${esc(text.slice(0, i))}<mark>${esc(snip)}</mark>${esc(text.slice(i + snip.length))}`; };
+function ladderHTML(t, c) {
+  const D = SQ.diag; if (!D) return "";
+  const at = Q.CHECKS.findIndex(([k]) => k === D.item), name = (k) => (Q.CHECKS.find(([x]) => x === k) || [, k])[1];
+  let h = "";
+  if (SQ.guessing) return `<div class="fb bad">${SQ.fb}</div><div class="where"><b>Where did it go wrong?</b> Run the checklist in your head and pick the first thing that's off.
+    <div class="picks">${Q.CHECKS.slice(1).map(([k, l]) => `<button type="button" data-where="${k}">${esc(l)}</button>`).join("")}</div></div>`;
+  if (SQ.hint >= 1) {
+    const guess = SQ.guess ? (SQ.guess === D.item ? `<p class="ok">You said <b>${esc(name(SQ.guess))}</b>. That's it.</p>` : `<p>You said <b>${esc(name(SQ.guess))}</b>. ${at > Q.CHECKS.findIndex(([k]) => k === SQ.guess) ? "That part checks out. It goes off later:" : "Something goes off before that:"}</p>`) : "";
+    const list = at < 0 ? `<p>${D.say}</p>` : `<ol class="checks">${Q.CHECKS.map(([k, l], i) => i > at ? `<li class="todo">${esc(l)}</li>` : i < at ? `<li class="ok">${esc(l)}</li>` : `<li class="off"><b>${esc(l)}</b> ${D.say}</li>`).join("")}</ol>`;
+    const span = D.clause && Q.clauseSpan(SQ.text, D.clause), mine = span ? `<div class="example">${esc(SQ.text.slice(0, span[0]))}<mark>${esc(SQ.text.slice(...span))}</mark>${esc(SQ.text.slice(span[1]))}</div>` : "";
+    h += `<div class="rung"><small>Hint 1 · where it went wrong</small>${guess}${list}${mine}</div>`;
+  }
+  if (SQ.hint >= 2) {
+    const tip = (D.item && Q.CHECK_TIP[D.item]) || "", own = c.hint || (t.kind === "extend" ? "" : t.hint) || "", df = D.diff;
+    const rows = (rs) => rs.map((r) => `<tr>${r.map((v) => `<td>${esc(v == null ? "NULL" : String(v))}</td>`).join("")}</tr>`).join("");
+    const diff = df && (df.nExtra || df.nMissing) ? `<table class="diff"><tr>${df.cols.map((x) => `<th>${esc(x)}</th>`).join("")}</tr>${df.extra.length ? `<tr><td colspan="${df.cols.length}" class="lab">Yours has, the ask doesn't (${df.nExtra})</td></tr>${rows(df.extra)}` : ""}${df.missing.length ? `<tr><td colspan="${df.cols.length}" class="lab">The ask has, yours doesn't (${df.nMissing})</td></tr>${rows(df.missing)}` : ""}</table>` : "";
+    h += `<div class="rung"><small>Hint 2 · how to check it</small><p>${tip}</p>${own ? `<p>${esc(own)}</p>` : ""}${diff}</div>`;
+  }
+  if (SQ.hint >= 3) h += `<div class="rung"><small>Hint 3 · the piece that's off</small>${D.keyPiece ? `<p>The ask's version:</p><div class="example">${esc(D.keyPiece)}</div>` : "<p>No smaller piece to show here. The next hint is the answer.</p>"}</div>`;
+  if (SQ.hint >= 4) h += `<div class="rung"><small>The answer</small><div class="example">${esc(c.show && (c.stage || c.final) ? c.show : c.sql)}</div><p>Type it, or fix yours to match. This one counts as a miss, and a twin of it comes next.</p></div>`;
+  return h;
+}
+// after a missed chain step: its answer's rows stay on screen, and the next step opens
+function chainOn() { SQ.subs.push({ out: SQ.out }); pinStage(cur(), SQ.out); Object.assign(SQ, TRY0(), { sub: SQ.sub + 1, subFail: false, why: "" }); skipGiven(); sqlDraw(); }
+function endRecap() { (O.sql._recap = O.sql._recap || {})[SQ.recapFor] = TODAY(); save(); Object.assign(SQ, { mode: "lesson", queue: [], view: "lesson", part: lessonId("sql") }); sqlDraw(); }
 function sqlNext() {
+  if (SQ.mode !== "lesson") {
+    if (SQ.queue.length) { newRep(); return sqlDraw(); }
+    if (SQ.mode === "recap") return endRecap();
+    SQ.view = "revdone"; return sqlDraw();
+  }
   if (SQ.justPassed) { SQ.justPassed = false; SQ.view = "pass"; SND.done(); hud(); return sqlDraw(); }
   newRep(); sqlDraw();
 }
@@ -547,6 +873,7 @@ document.addEventListener("keydown", (e) => {
     if (G.desk === "clock" && /^[1-3]$/.test(e.key)) { e.preventDefault(); return punch(ROLES[+e.key - 1]); }
     if (e.key === "Escape") return closeDesk();
     if (e.key === "\\") { e.preventDefault(); return toggleFull(); }
+    if (e.key === "Tab" && e.shiftKey && G.desk === "sql" && SQ.view === "rep") { e.preventDefault(); return openHint(); }
     if (e.key === "Tab" && G.desk === "sql" && SQ.view === "rep" && SQ.rep && !SQ.rep.practice && !SQ.peek && !SQ.done) { e.preventDefault(); SQ.peek = true; return sqlDraw(); }
     if (e.key === "Enter") { e.preventDefault(); const b = $("next") || $("again"); if (b) b.click(); }
     return;
@@ -564,7 +891,7 @@ $("say").addEventListener("click", () => SAY && sayNext());
 $("sheet").addEventListener("click", (e) => { if (e.target.closest("#full")) toggleFull(); else if (e.target.closest("#popboard")) popBoard(); });
 
 // ---------- start ----------
-if (location.search.includes("debug")) window.__office = { G, P, get O() { return O; }, SQ, TRACKS, PASSED, walkTo, use, goDay, recap, refreshStatus, punch, pickLesson, importProgress, get SAY() { return SAY; }, sayNext, set sql(t) { SQ.text = t; }, sqlRun, sqlNext, closeDesk, Q };
+if (location.search.includes("debug")) window.__office = { G, P, get O() { return O; }, SQ, TRACKS, PASSED, walkTo, use, goDay, recap, refreshStatus, punch, pickLesson, importProgress, get SAY() { return SAY; }, sayNext, set sql(t) { SQ.text = t; }, sqlRun, sqlNext, openHint, pickWhere, startReview, endRecap, runSql: (q) => run(q), get cur() { return cur(); }, closeDesk, Q };
 $("snd").textContent = MUTED ? "sound off" : "sound on"; $("snd").onclick = mute;
 if (DEV) { $("devbadge").hidden = false; $("devoff").onclick = () => { location.href = location.pathname + "?dev=0"; }; }
 else $("devon").hidden = false;

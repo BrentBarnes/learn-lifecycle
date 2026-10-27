@@ -114,3 +114,5 @@ The numbers are made up. Fernhill Coffee Co. and everyone who works there are ma
 The practice screens are modeled on Klaviyo and GrowthBook. Not affiliated with either.
 
 MIT license. Made by Brent Barnes. sql.js and Pyodide are under their own licenses (MIT and MPL 2.0).
+The SQL desk's last case file uses two samples of the Hillstrom email test data, released by Kevin Hillstrom
+(MineThatData, "E-Mail Analytics And Data Mining Challenge", 2008). All credit for that data goes to him.
