@@ -40,61 +40,94 @@ function mount() {
   css.textContent = `
   #sitebar{position:fixed;top:10px;right:12px;z-index:9000;display:flex;gap:6px;font:600 12.5px/1 Inter,system-ui,sans-serif}
   #sitebar button{font:inherit;background:#fffffff2;color:#22202a;border:1px solid #d6d2cb;border-radius:999px;padding:7px 12px;cursor:pointer;box-shadow:0 2px 8px #0002}
-  #sitebar button:hover{border-color:#6e56cf}
+  #sitebar button:hover{border-color:#2f6b4f}
   #sitebar.docked{position:static;font-size:12px}#sitebar.docked button{box-shadow:none;padding:6px 10px}
   #sitebar .menu{position:absolute;top:36px;right:0;background:#fff;border:1px solid #d6d2cb;border-radius:10px;box-shadow:0 8px 24px #0003;padding:6px;display:flex;flex-direction:column;gap:2px;min-width:220px}
   #sitebar .menu[hidden]{display:none}
   #sitebar .menu button{box-shadow:none;border:0;border-radius:6px;text-align:left;padding:9px 10px;background:none}
-  #sitebar .menu button:hover{background:#f1eefb}
+  #sitebar .menu button:hover{background:#e2efe7}
   #sitebar .menu small{display:block;font-weight:400;color:#6b6873;margin-top:3px}
   #sitebar .menu .msg{font-weight:400;color:#2f7d4f;padding:6px 10px;font-size:12px}
-  .sbveil{position:fixed;inset:0;z-index:9500;background:#16131bb3;display:grid;place-items:center;padding:16px;font:14px/1.5 Inter,system-ui,sans-serif;color:#22202a}
-  .sbbox{background:#fffdf8;border-radius:14px;box-shadow:0 16px 48px #0006;width:min(540px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:12px}
-  .sbbox h2{margin:0;font-size:19px}.sbbox p{margin:0}.sbbox .mut{color:#6b6873;font-size:12.5px}
-  .sbkinds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .sbkinds button{font:inherit;text-align:left;background:#fff;border:1.5px solid #e2ddd4;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;color:inherit}
-  .sbkinds button b{display:block;font-size:14px}.sbkinds button small{color:#6b6873;font-size:12px}
-  .sbkinds button .ic{font-size:20px;line-height:1}
-  .sbkinds button[data-k="prompt"]{grid-column:1/-1}
-  .sbfields .hint{margin:0;font-size:12.5px;color:#4a4752;background:#f1eefb;border-radius:8px;padding:8px 10px}
-  .sbfields fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
-  .sbfields legend,.sbfields .fld>span{font-size:13.5px;font-weight:600;padding:0;margin-bottom:6px}
-  .sbfields .fld{display:flex;flex-direction:column}
-  .sbfields .chips{display:flex;flex-wrap:wrap;gap:6px}
-  .sbfields .chips label{display:inline-flex;gap:5px;align-items:center;border:1.5px solid #e2ddd4;border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;background:#fff}
-  .sbfields .chips label small{color:#8a8792;font-size:11.5px}
-  .sbfields .chips label:has(input:checked){border-color:#6e56cf;background:#f1eefb}
-  .sbfields .chips input{position:absolute;opacity:0;pointer-events:none}.sbfields .chips label:focus-within{outline:2px solid #6e56cf88;outline-offset:1px}
-  .sbbox .sbfields textarea{min-height:0;font-weight:400}.sbbox .sbfields textarea[name="what"]{min-height:84px}
-  .sbfields details summary{cursor:pointer;color:#5a44b8;font-size:12.5px}
-  .sbfields pre{white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto;background:#22202a;color:#efeaf7;border-radius:8px;padding:10px;margin:6px 0 0;font:11.5px/1.5 ui-monospace,monospace}
-  .sbkinds button:hover{border-color:#b3a6e6}.sbkinds button.on{border-color:#6e56cf;background:#f1eefb}
-  .sbbox textarea,.sbbox input[type=text]{font:inherit;width:100%;box-sizing:border-box;border:1.5px solid #e2ddd4;border-radius:8px;padding:9px 10px;background:#fff;color:inherit}
-  .sbbox textarea{min-height:120px;resize:vertical}
-  .sbbox textarea:focus,.sbbox input:focus{outline:2px solid #6e56cf55;border-color:#6e56cf}
-  .sbbox label.ck{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#4a4752}
-  .sbrow{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
-  .sbrow .sp{flex:1}
-  .sbbtn{font:600 14px Inter,system-ui,sans-serif;border-radius:8px;padding:9px 16px;cursor:pointer;border:1.5px solid #6e56cf;background:#6e56cf;color:#fff}
-  .sbbtn.alt{background:#fff;color:#22202a;border-color:#d6d2cb}.sbbtn:disabled{opacity:.5;cursor:default}
-  .sbbox a{color:#5a44b8}
+  /* the suggestion box, in Fernhill's colors (the contribute page's palette) */
+  .sbveil{--sb-bg:#fffcf7;--sb-bg2:#f6efe4;--sb-ink:#2a1f17;--sb-ink2:#4a3b2f;--sb-muted:#7a6a5c;--sb-line:#e3d6c3;--sb-accent:#2f6b4f;--sb-on:#fff;--sb-soft:#e2efe7;--sb-crema:#c8743a;--sb-term:#231a14;--sb-err:#b3261e;--sb-errbg:#fbe9e7;
+    position:fixed;inset:0;z-index:9500;background:#120d09b8;backdrop-filter:blur(3px);display:grid;place-items:center;padding:24px;font:15px/1.55 Inter,system-ui,sans-serif;color:var(--sb-ink);animation:sbfade .18s ease-out}
+  @media (prefers-color-scheme:dark){.sbveil{--sb-bg:#221b15;--sb-bg2:#1a140f;--sb-ink:#f2e9dc;--sb-ink2:#d8cbbb;--sb-muted:#a8998a;--sb-line:#3a2f26;--sb-accent:#6fc39a;--sb-on:#10251a;--sb-soft:#1f3328;--sb-crema:#e39a5f;--sb-term:#0f0b08;--sb-err:#ff8a7a;--sb-errbg:#3a1d19}}
+  .sbveil *{box-sizing:border-box}
+  .sbbox{position:relative;display:flex;flex-direction:column;width:min(640px,100%);max-height:calc(100vh - 48px);background:var(--sb-bg);border-radius:20px;box-shadow:0 2px 8px #0003,0 30px 80px #0007;overflow:hidden;animation:sbrise .22s cubic-bezier(.2,.8,.2,1)}
+  @keyframes sbfade{from{opacity:0}}@keyframes sbrise{from{opacity:0;transform:translateY(12px) scale(.98)}}
+  .sbhead{display:flex;align-items:center;gap:14px;padding:20px 22px 16px;border-bottom:1px solid var(--sb-line)}
+  .sbhead img{width:44px;height:44px;border-radius:12px;background:var(--sb-bg2);image-rendering:pixelated;flex:none}
+  .sbhead h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+  .sbhead p{margin:2px 0 0;font-size:13.5px;color:var(--sb-muted)}
+  .sbclose{margin-left:auto;flex:none;width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:var(--sb-muted);font:400 18px/1 Inter,sans-serif;cursor:pointer}
+  .sbclose:hover{background:var(--sb-bg2);color:var(--sb-ink)}
+  .sbbody{flex:1;overflow:auto;padding:20px 22px 22px;display:flex;flex-direction:column;gap:22px;overscroll-behavior:contain}
+  .sblabel{display:block;font-size:14px;font-weight:700;margin-bottom:10px}
+  .sbkinds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+  .sbkinds button{font:600 13px/1.25 Inter,system-ui,sans-serif;color:var(--sb-ink);background:var(--sb-bg);border:2px solid var(--sb-line);border-radius:14px;padding:12px 6px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;transition:border-color .12s,background .12s,transform .12s}
+  .sbkinds button .ic{font-size:24px;line-height:1}
+  .sbkinds button:hover{border-color:var(--sb-ink2);transform:translateY(-1px)}
+  .sbkinds button.on{border-color:var(--sb-accent);background:var(--sb-soft);box-shadow:inset 0 0 0 1px var(--sb-accent)}
+  .sbkhint{margin:10px 0 0;font-size:13.5px;color:var(--sb-muted);min-height:1.55em}
+  .sbfields{display:flex;flex-direction:column;gap:18px}.sbfields[hidden],.sbmore[hidden]{display:none}
+  .sbq,.sbfields .fld{display:flex;flex-direction:column;gap:7px}
+  .sbq>span,.sbfields legend,.sbfields .fld>span{font-size:14px;font-weight:700;padding:0;margin:0}
+  .sbq small{font-weight:400;color:var(--sb-muted);margin-left:4px}
+  .sbbox textarea,.sbbox input[type=text]{font:400 15px/1.5 Inter,system-ui,sans-serif;width:100%;border:2px solid var(--sb-line);border-radius:12px;padding:10px 12px;background:var(--sb-bg);color:var(--sb-ink);resize:vertical}
+  .sbbox textarea::placeholder,.sbbox input::placeholder{color:color-mix(in srgb,var(--sb-muted) 70%,transparent)}
+  .sbbox textarea:focus,.sbbox input[type=text]:focus{outline:none;border-color:var(--sb-accent);box-shadow:0 0 0 4px var(--sb-soft)}
+  .sbbox textarea:disabled,.sbbox input:disabled{opacity:.6}
+  .sbseg{display:flex;gap:8px;flex-wrap:wrap}
+  .sbseg button,.sbfields .chips label{font:500 14px Inter,system-ui,sans-serif;color:var(--sb-ink);background:var(--sb-bg);border:2px solid var(--sb-line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:border-color .12s,background .12s}
+  .sbseg button:hover,.sbfields .chips label:hover{border-color:var(--sb-ink2)}
+  .sbseg button.on,.sbfields .chips label:has(input:checked){border-color:var(--sb-accent);background:var(--sb-soft)}
+  .sbfields .hint{margin:0;font-size:13.5px;color:var(--sb-ink2);background:var(--sb-bg2);border-radius:12px;padding:10px 14px;border-left:4px solid var(--sb-crema)}
+  .sbfields fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+  .sbfields .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .sbfields .chips label{display:inline-flex;gap:6px;align-items:center}
+  .sbfields .chips label small{color:var(--sb-muted);font-size:12px}
+  .sbfields .chips input{position:absolute;opacity:0;pointer-events:none}.sbfields .chips label:focus-within{outline:3px solid var(--sb-crema);outline-offset:2px}
+  .sbfields details summary,.sbat summary{cursor:pointer;color:var(--sb-accent);font-size:13.5px;font-weight:600}
+  .sbfields pre,.sbat pre{white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto;background:var(--sb-term);color:#eadfcf;border-radius:12px;padding:12px 14px;margin:8px 0 0;font:12px/1.6 "JetBrains Mono",ui-monospace,monospace}
+  .sbmore{display:flex;flex-direction:column;gap:16px;padding-top:20px;border-top:1px dashed var(--sb-line)}
+  .sbat{display:flex;gap:14px;align-items:flex-start;background:var(--sb-bg2);border-radius:14px;padding:14px 16px}
+  .sbat b{display:block;font-size:14px}.sbat .why{display:block;font-size:13px;color:var(--sb-muted);margin:2px 0 6px}
+  .sbswitch{position:relative;flex:none;width:42px;height:24px;margin-top:2px;cursor:pointer}
+  .sbswitch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .sbswitch i{position:absolute;inset:0;border-radius:999px;background:var(--sb-line);transition:background .15s;pointer-events:none}
+  .sbswitch i::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0004;transition:transform .15s}
+  .sbswitch input:checked+i{background:var(--sb-accent)}.sbswitch input:checked+i::after{transform:translateX(18px)}
+  .sbswitch input:focus-visible+i{outline:3px solid var(--sb-crema);outline-offset:2px}
+  .sbfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 22px;border-top:1px solid var(--sb-line);background:var(--sb-bg2)}
+  .sbfoot .sp{flex:1}
+  .sbfoot a{font-size:13.5px;color:var(--sb-muted);font-weight:600}.sbfoot a:hover{color:var(--sb-ink)}
+  .sbbtn{font:700 15px Inter,system-ui,sans-serif;border-radius:12px;padding:10px 20px;cursor:pointer;border:2px solid var(--sb-accent);background:var(--sb-accent);color:var(--sb-on);transition:transform .12s,opacity .12s}
+  .sbbtn:hover:not(:disabled){transform:translateY(-1px)}
+  .sbbtn.alt{background:transparent;color:var(--sb-ink);border-color:var(--sb-line)}.sbbtn.alt:hover{border-color:var(--sb-ink2)}
+  .sbbtn:disabled{opacity:.4;cursor:default}
+  .sbbox a{color:var(--sb-accent)}
+  .sbbox a.sbbtn{color:var(--sb-on)}
+  .sbveil :focus-visible{outline:3px solid var(--sb-crema);outline-offset:2px}
+  .sbveil .sbbox:focus{outline:none}
   .sbhp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-  .sbdone{background:#e3f5ec;border-radius:8px;padding:10px 12px;color:#1f5f3f}
-  .sbfields{display:flex;flex-direction:column;gap:10px}.sbpick{margin:0}
-  .sbq{display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600}.sbq small{font-weight:400;color:#8a8792}
-  .sbq textarea{min-height:0;font-weight:400}.sbq textarea[data-f="0"]{min-height:96px}
-  .sbseg{display:flex;gap:6px;flex-wrap:wrap}
-  .sbseg button{font:500 13px Inter,system-ui,sans-serif;background:#fff;color:inherit;border:1.5px solid #e2ddd4;border-radius:999px;padding:6px 12px;cursor:pointer}
-  .sbseg button.on{border-color:#6e56cf;background:#f1eefb}
-  .sbat{display:flex;flex-direction:column;gap:6px;background:#f6f3ec;border-radius:10px;padding:10px 12px}
-  .sbat details{font-size:12.5px;color:#4a4752}.sbat summary{cursor:pointer;color:#5a44b8}
-  .sbat pre{white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto;background:#fff;border:1px solid #e2ddd4;border-radius:6px;padding:8px;margin:6px 0 0;font:11.5px/1.45 ui-monospace,monospace}
-  .sbbox textarea:disabled,.sbbox input:disabled{background:#f4f2ee;color:#6b6873}
+  .sberr{background:var(--sb-errbg);color:var(--sb-err);border-radius:12px;padding:12px 14px;font-size:14px}.sberr a{color:inherit;font-weight:700}
+  .sbdone{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:28px 10px 14px}
+  .sbdone img{width:84px;height:84px;image-rendering:pixelated;border-radius:18px;background:var(--sb-bg2)}
+  .sbdone h3{margin:6px 0 0;font-size:22px;font-weight:800}.sbdone p{margin:0;color:var(--sb-ink2);max-width:400px}
+  .sbdone .sbbtn{text-decoration:none;margin-top:6px}
+  @media (max-width:600px){
+    .sbveil{padding:0;place-items:end stretch}
+    .sbbox{width:100%;max-height:92vh;border-radius:20px 20px 0 0;animation-name:sbup}
+    @keyframes sbup{from{transform:translateY(40px);opacity:0}}
+    .sbkinds{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .sbhead,.sbbody,.sbfoot{padding-left:16px;padding-right:16px}
+    .sbfoot a{order:3;width:100%;text-align:center}
+  }
+  @media (prefers-reduced-motion:reduce){.sbveil,.sbbox{animation:none}}
   #sitebar .ok{align-self:center;font-weight:600;color:#1f6f45;background:#e3f5ecf2;border-radius:999px;padding:6px 10px;opacity:0;transition:opacity .4s;pointer-events:none}
   #sitebar .ok.on{opacity:1}#sitebar.docked .ok{padding:4px 8px}
   #sitebar .menu .info{font-weight:400;color:#4a4752;padding:8px 10px 6px;font-size:12px;line-height:1.45;border-bottom:1px solid #eee;margin-bottom:4px}
-  .sberr{background:#fbe7e4;border-radius:8px;padding:10px 12px;color:#8a2a20}
-  @media (max-width:520px){.sbkinds{grid-template-columns:1fr}#sitebar{top:auto;bottom:10px}#sitebar .menu{top:auto;bottom:36px}}`;
+  @media (max-width:520px){#sitebar{top:auto;bottom:10px}#sitebar .menu{top:auto;bottom:36px}}`;
   document.head.appendChild(css);
   const bar = document.createElement("div");
   bar.id = "sitebar";
@@ -244,22 +277,32 @@ function suggest() {
   const at = snapshot();   // before the box covers anything
   const v = document.createElement("div");
   v.className = "sbveil";
-  v.innerHTML = `<form class="sbbox" autocomplete="off" novalidate>
-    <h2>Make a suggestion</h2>
-    <p class="mut">It goes to the game's public issue list on GitHub, where anyone can read it. Please leave out anything private. Want to help build it? <a href="/contribute/" target="_blank" rel="noopener">Here's how</a>.</p>
-    <div class="sbkinds">${KINDS.map((k) => `<button type="button" data-k="${k.id}" aria-pressed="false"><span class="ic">${k.icon}</span><span><b>${k.name}</b><small>${k.hint}</small></span></button>`).join("")}</div>
-    <div id="sbfields" class="sbfields"><p class="mut sbpick">Pick one above to start.</p></div>
-    <input type="text" id="sbwho" placeholder="Your name or GitHub @handle (optional, shown publicly)" maxlength="80">
-    <div class="sbat"><label class="ck"><input type="checkbox" id="sbwhere" checked> <span>Attach where I am in the game: <b>${esc(at.place.find((t) => /·|›/.test(t)) || at.place[at.place.length - 1] || at.game)}</b>. It helps us find and fix it fast.</span></label>
-      <details><summary>See exactly what's attached</summary><pre id="sbpre"></pre></details></div>
-    <input class="sbhp" type="text" id="sbhp" tabindex="-1" aria-hidden="true">
-    <div id="sbout" role="status"></div>
-    <div class="sbrow"><a href="#" id="sbgh">Post it on GitHub yourself</a><span class="sp"></span><button type="button" class="sbbtn alt" id="sbx">Cancel</button><button type="submit" class="sbbtn" id="sbgo" disabled>Send</button></div>
+  const here = at.place.find((t) => /·|›/.test(t)) || at.place[at.place.length - 1] || at.game;
+  v.innerHTML = `<form class="sbbox" tabindex="-1" autocomplete="off" novalidate role="dialog" aria-modal="true" aria-labelledby="sbtitle">
+    <header class="sbhead"><img src="/px/sprites/face_dana_smile.png" alt="">
+      <div><h2 id="sbtitle">Make a suggestion</h2><p>It goes to the game's public list on GitHub. <a href="/contribute/" target="_blank" rel="noopener">Help build it</a></p></div>
+      <button type="button" class="sbclose" id="sbclose" aria-label="Close">✕</button></header>
+    <div class="sbbody" id="sbbody">
+      <div><span class="sblabel" id="sbklabel">What kind is it?</span>
+        <div class="sbkinds" role="group" aria-labelledby="sbklabel">${KINDS.map((k) => `<button type="button" data-k="${k.id}" aria-pressed="false" title="${esc(k.hint)}"><span class="ic">${k.icon}</span>${k.name}</button>`).join("")}</div>
+        <p class="sbkhint" id="sbkhint">Pick one to start. Anyone can read what you send, so leave out anything private.</p></div>
+      <div id="sbfields" class="sbfields" hidden></div>
+      <div class="sbmore" id="sbmore" hidden>
+        <label class="sbq"><span>Your name or GitHub @handle <small>optional, shown publicly</small></span><input type="text" id="sbwho" placeholder="Leave blank to stay anonymous" maxlength="80"></label>
+        <div class="sbat"><label class="sbswitch"><input type="checkbox" id="sbwhere" checked aria-describedby="sbatwhy"><i></i></label>
+          <div><b>Attach where I am: ${esc(here)}</b><span class="why" id="sbatwhy">The game, the step, the screen's text and your browser type. Nothing personal. It helps us find it fast.</span>
+            <details><summary>See exactly what's attached</summary><pre id="sbpre"></pre></details></div></div>
+      </div>
+      <input class="sbhp" type="text" id="sbhp" tabindex="-1" aria-hidden="true">
+      <div id="sbout" role="status"></div>
+    </div>
+    <footer class="sbfoot" id="sbfoot"><a href="#" id="sbgh">Post it on GitHub yourself</a><span class="sp"></span><button type="button" class="sbbtn alt" id="sbx">Cancel</button><button type="submit" class="sbbtn" id="sbgo" disabled>Send</button></footer>
   </form>`;
   calm(v);
   document.body.appendChild(v);
   const $ = (s) => v.querySelector(s);
   $("#sbpre").textContent = contextText(at);
+  setTimeout(() => $(".sbbox").focus(), 0);   // focus inside the box without pre-picking a kind
   let kind = null, again = "", sent = false;
   const onEsc = (e) => { if (e.key === "Escape") { e.stopPropagation(); e.preventDefault(); close(); } };
   // the open desk's game (a frame) pulls focus back to its own key catcher: shut the frames while the box is open,
@@ -281,6 +324,8 @@ function suggest() {
     const keep = isPrompt() ? [T.read($("#sbfields")).what] : vals();
     kind = KINDS.find((k) => k.id === b.dataset.k);
     v.querySelectorAll("[data-k]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    $("#sbkhint").textContent = kind.hint + ".";
+    $("#sbfields").hidden = $("#sbmore").hidden = false;
     if (isPrompt()) {
       const box = $("#sbfields");
       box.innerHTML = T.fieldsHTML() + `<details><summary>Preview the prompt</summary><pre id="sbppre"></pre></details>`;
@@ -298,7 +343,7 @@ function suggest() {
     v.querySelectorAll("[data-a]").forEach((x) => x.onclick = () => { again = again === x.dataset.a ? "" : x.dataset.a; v.querySelectorAll("[data-a]").forEach((y) => y.classList.toggle("on", y.dataset.a === again)); });
     $("[data-f='0']").focus(); ready();
   });
-  $("#sbx").onclick = close;
+  $("#sbx").onclick = $("#sbclose").onclick = close;
   v.addEventListener("click", (e) => { if (e.target === v) close(); });
   $("#sbwho").addEventListener("input", ready); $("#sbwhere").addEventListener("change", ready);
   const issue = () => {
@@ -328,12 +373,15 @@ function suggest() {
       const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
       if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
       sent = true;
-      v.querySelectorAll("textarea, input, .sbkinds button, .sbseg button, .chips input").forEach((x) => { x.disabled = true; });
-      out.innerHTML = `<div class="sbdone">Sent. Thank you! <a href="${esc(j.url)}" target="_blank" rel="noopener">See it on GitHub (#${esc(j.number)})</a></div>`;
-      go.textContent = "Sent ✓"; $("#sbgh").hidden = true; $("#sbx").textContent = "Close"; $("#sbx").focus();
+      $("#sbbody").innerHTML = `<div class="sbdone"><img src="/px/sprites/face_dana_smile.png" alt=""><h3>Sent. Thank you!</h3>
+        <p>It's issue #${esc(j.number)} on GitHub now. Anyone can read it and follow along there.</p>
+        <a class="sbbtn" href="${esc(j.url)}" target="_blank" rel="noopener">See it on GitHub</a></div>`;
+      $("#sbfoot").innerHTML = `<span class="sp"></span><button type="button" class="sbbtn alt" id="sbx">Close</button>`;
+      $("#sbx").onclick = close; $("#sbx").focus();
     } catch (err) {
       const msg = /Too many|more first/.test(err.message) ? esc(err.message) + " " : "This copy of the game couldn't send it directly. ";
       out.innerHTML = `<div class="sberr">${msg}<a href="${esc(ghUrl())}" target="_blank" rel="noopener">Open it on GitHub</a> to post it (it needs a free GitHub account), or <a href="#" id="sbcopy">copy it</a> to send another way.</div>`;
+      out.scrollIntoView({ block: "nearest" });
       out.querySelector("#sbcopy").onclick = (ev) => { ev.preventDefault(); const i = issue(); navigator.clipboard.writeText(i.title + "\n\n" + i.body).then(() => { ev.target.textContent = "copied ✓"; }); };
       go.textContent = "Send"; ready();
     }
