@@ -99,6 +99,7 @@ function suggest() {
   v.innerHTML = `<form class="sbbox" autocomplete="off">
     <h2>Make a suggestion</h2>
     <p class="mut">It goes to the game's public issue list on GitHub, where anyone can read it. Please leave out anything private.</p>
+    <p class="mut">Want to help build it? <a href="/contribute/" target="_blank" rel="noopener">Here's how</a>.</p>
     <div class="sbkinds">${KINDS.map((k) => `<button type="button" data-k="${k.id}"><span class="ic">${k.icon}</span><span><b>${k.name}</b><small>${k.hint}</small></span></button>`).join("")}</div>
     <textarea id="sbtext" placeholder="Pick a kind above, then write it here." maxlength="5000"></textarea>
     <input type="text" id="sbwho" placeholder="Your name or GitHub @handle (optional, shown publicly)" maxlength="80">

@@ -1,6 +1,7 @@
 # Contributing
 
-Thanks for wanting to help. There are three ways in, from least to most work.
+Thanks for wanting to help. The short version, with links, is on the
+[contribute page](https://lifecycle-practice.vercel.app/contribute/). There are four ways in, from least to most work.
 
 ## 1. Tell me what you think
 
@@ -8,7 +9,13 @@ Press **Make a suggestion** in the game, or [open an issue](https://github.com/B
 Bugs, ideas, "this step confused me", and "this part was great" are all useful. For a bug, say which game and which
 step, and what you expected to happen.
 
-## 2. Send a prompt request
+## 2. Talk it through with me
+
+The best levels come from real work: a launch that broke, a flow that quietly stopped working, a segment or a report
+that saves you time. [Message me on LinkedIn](https://www.linkedin.com/in/brent-barnes-39827622b) and we'll talk it
+through, by DM or on a Zoom call. If it becomes a level, you get credit in the game, by name or not, your call.
+
+## 3. Send a prompt request
 
 You don't have to write the code. Write the prompt you'd give an AI coding agent (Claude Code, Codex, Cursor) to make
 the change, and open a **Prompt request** issue with it. I read each one and choose whether to run it. If I run it,
@@ -21,9 +28,15 @@ A good prompt request:
 - says how to check it worked ("the new step shows after step 2s3, and its reps pass after 4 of 5 right")
 - keeps the game's rules (below)
 
-## 3. Send a pull request
+## 4. Send a pull request
 
-Fork the repo, make the change, and open a pull request. Keep it to one change per pull request.
+Fork the repo, make the change, and open a pull request. Keep it to one change per pull request. The template asks for
+three things: **what you built**, a **review link** that opens the game right at your change, and **how to check it
+works**. [AGENTS.md](AGENTS.md) lists the review link patterns. If you build with an AI agent, point it at AGENTS.md
+first. It has the layout, the rules and what to hand back.
+
+To find something to work on, see the [project board](https://github.com/users/BrentBarnes/projects/4). Anything in
+Up next is open. Say so in the issue first so two people don't build the same thing.
 
 **One thing to know first:** this repo is a published copy. I build it from my own working copy, where the games also
 run on my machine with extras that need a server. So when I merge a pull request, I bring the same change into my

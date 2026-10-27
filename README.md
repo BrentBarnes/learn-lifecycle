@@ -7,6 +7,9 @@ screens built like the tools you'd use at work: a flow dashboard, a SQL console 
 
 ![The Fernhill office](docs/screenshots/office.png)
 
+**Help build it.** The best levels come from people who do the job. Tell me a story from work, send an idea, or build a
+level yourself. [Here's how](https://lifecycle-practice.vercel.app/contribute/).
+
 ## What's in it
 
 You've just started at **Fernhill Coffee Co.**, a made-up coffee brand. On day 1, Dana asks what you were hired for.
@@ -86,8 +89,8 @@ On any other host, the box opens a prefilled GitHub issue instead.
 - **While you play:** press **Make a suggestion** (top right). Pick Bug, Feature idea, Feedback or Something else
   and write it down. It lands in this repo's [issues](https://github.com/BrentBarnes/lifecycle-practice/issues).
 - **On GitHub:** [open an issue](https://github.com/BrentBarnes/lifecycle-practice/issues/new/choose).
-- **Want to build something?** Read [CONTRIBUTING.md](CONTRIBUTING.md). You can send a pull request, or send a
-  **prompt request**: a prompt for an AI coding agent that would make the change. If I like it, I run it.
+- **Want to help build it?** Start at the [contribute page](https://lifecycle-practice.vercel.app/contribute/). Details
+  are in [CONTRIBUTING.md](CONTRIBUTING.md), and AI coding agents should read [AGENTS.md](AGENTS.md) first.
 
 ## What's inside the repo
 
@@ -99,6 +102,7 @@ On any other host, the box opens a prefilled GitHub issue instead.
 | `shared/` | The desk themes, the pop-out tutorial, Copy as a question, and the Save file and suggestion buttons |
 | `px/` | The pixel art |
 | `api/feedback.js` | The suggestion box's server function, for Vercel |
+| `contribute/` | The contribute page |
 
 There's no build step and no dependencies to install. The code is plain HTML, CSS and JavaScript modules, plus
 Python for the Lifecycle Files engine.
