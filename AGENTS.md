@@ -62,13 +62,16 @@ Read the top comment of any file before editing it. Each one says what it owns.
 Write the pull request description with these three things. The template asks for them.
 
 1. **What you built**, in two or three plain sentences.
-2. **A review link** that opens the game right at the change, so the reviewer doesn't have to hunt for it:
+2. **A review link** that opens the game right at the change, so the reviewer clicks once and is there. **Always write
+   it out as a full URL**, never a bare path, so it's clickable in the pull request. Use the pull request's Vercel
+   preview address once Vercel comments it on the pull request (it shows your change before it's merged). Until then,
+   use `https://lifecycle-practice.vercel.app`. If you list more than one change, give each its own link.
 
-   | Changed | Review link |
+   | Changed | Review link (example) |
    |---|---|
-   | An office lesson (any desk) | `/office/?dev&try=<role>:<lesson id>`, roles `analytics`, `data`, `testing`, ids from `office/days.mjs`. Example: `/office/?dev&try=data:where` |
-   | A Lifecycle Files step | `/lifecycle-files/?start=step&step=<step id>&profile=office-dev`. Example: `step=2s3` |
-   | A Test Board unit | `/test-board/?embed=<unit id>&save=office-dev`. Example: `embed=U2a` |
+   | An office lesson (any desk) | https://lifecycle-practice.vercel.app/office/?dev&try=data:where. Roles: `analytics`, `data`, `testing`. Lesson ids: `office/days.mjs` |
+   | A Lifecycle Files step | https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&step=2s3&profile=office-dev |
+   | A Test Board unit | https://lifecycle-practice.vercel.app/test-board/?embed=U2a&save=office-dev |
    | A new kind of screen | Add a URL parameter that jumps straight to it, in the same style, and give that link |
 
    Review links use the practice (dev) saves, so they never touch real progress.

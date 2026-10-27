@@ -6,7 +6,7 @@
 //   GITHUB_TOKEN  a fine-grained token with "Issues: Read and write" on this one repo, nothing else
 //   GITHUB_REPO   owner/name, e.g. BrentBarnes/lifecycle-practice
 // Without GITHUB_TOKEN it answers 503 and the box shows the GitHub link instead.
-const KINDS = { bug: "Bug", idea: "Feature idea", feedback: "Feedback", other: "Something else" };
+const KINDS = { bug: "Bug", idea: "Feature idea", feedback: "Feedback", other: "Something else", prompt: "Prompt request" };   // prompt: the contribute page's template
 const SEEN = new Map();   // ip -> recent send times: a light brake on floods (per warm instance only)
 const LIMIT = 5, WINDOW_MS = 10 * 60 * 1000;
 
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     r = await fetch(`https://api.github.com/repos/${repo}/issues`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "lifecycle-practice-feedback", "X-GitHub-Api-Version": "2022-11-28" },
-      body: JSON.stringify({ title, body: `${text}\n\n_Sent from the game's suggestion box (${KINDS[kind]})._`, labels: ["from-game", kind] }),
+      body: JSON.stringify({ title, body: `${text}\n\n_Sent from ${kind === "prompt" ? "the contribute page" : "the game's suggestion box"} (${KINDS[kind]})._`, labels: kind === "prompt" ? ["prompt"] : ["from-game", kind] }),
     });
   } catch (e) { return res.status(502).json({ error: "GitHub didn't answer" }); }
   if (!r.ok) { console.error(`GitHub said ${r.status}`); return res.status(502).json({ error: `GitHub said ${r.status}` }); }

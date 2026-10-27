@@ -33,17 +33,38 @@ footer{color:var(--muted);font-size:13px;margin-top:44px}footer a{color:inherit}
 .way .face{flex:none;position:relative;width:56px;height:56px}
 .way .face img{width:56px;height:56px;image-rendering:pixelated;border-radius:10px;background:var(--code);display:block}
 .way .face .n{position:absolute;right:-6px;bottom:-6px;width:24px;height:24px;font-size:13px;border:2px solid var(--card)}
-.rail{position:fixed;top:0;bottom:0;width:120px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:34px;pointer-events:none}
-.rail.l{left:calc(50% - 430px - 170px)}.rail.r{right:calc(50% - 430px - 170px)}
+.rail{position:fixed;top:50%;transform:translateY(-50%);width:210px;height:576px;display:none;flex-direction:column;justify-content:space-evenly;align-items:center;pointer-events:none;
+  background:url(/px/scenes/office.png) 0 0/960px 576px no-repeat;image-rendering:pixelated;border:4px solid #5b3a22;border-radius:14px;box-shadow:0 10px 30px #0003;overflow:hidden}
+.rail.l{left:calc(50% - 430px - 250px)}.rail.r{right:calc(50% - 430px - 250px);background-position:-750px 0}
 .who{display:flex;flex-direction:column;align-items:center;gap:6px}
 .who i{display:block;width:72px;height:108px;background-repeat:no-repeat;background-size:288px 108px;image-rendering:pixelated;animation:bob 3.2s ease-in-out infinite}
 .who:nth-child(2) i{animation-delay:-1.1s}.who:nth-child(3) i{animation-delay:-2.2s}
-.who span{font:600 10px/1.2 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center}
-.who span small{display:block;font-weight:400;letter-spacing:.04em;text-transform:none;font-size:11px}
+.who span{font:600 10px/1.2 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#3b2a1c;text-align:center;background:#fff8ecee;border:2px solid #5b3a22;border-radius:6px;padding:3px 7px}
+.who span small{display:block;font-weight:400;letter-spacing:.04em;text-transform:none;font-size:11px;color:#6b5440}
 .who .dog{width:96px;height:64px;background-size:384px 64px;animation:dog 1s steps(4) infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes dog{to{background-position:-384px 0}}
-@media (min-width:1220px) and (min-height:620px){.rail{display:flex}}
+@media (min-width:1380px) and (min-height:640px){.rail{display:flex}}
+.acts{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:10px}
+.btn{font:600 15px Inter,system-ui,sans-serif;border:1.5px solid var(--line);background:var(--card);color:var(--accent);border-radius:9px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn:disabled{opacity:.5;cursor:default}
+.acts .go{margin-top:0}
+.tpl{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.tpl fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.tpl legend,.fld{font-weight:600;font-size:15px;padding:0}
+.tpl small{font-weight:400;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:inline-flex;gap:6px;align-items:center;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;background:var(--bg)}
+.chips label:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+.chips input{position:absolute;opacity:0;pointer-events:none}.chips label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.tpl input[type=text],.tpl textarea{font:400 15px/1.45 Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;box-sizing:border-box}
+.tpl input[type=text]:focus,.tpl textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 35%,transparent);border-color:var(--accent)}
+.tpl details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.tpl pre{white-space:pre-wrap;margin:8px 0 0}
+#tplmsg{font-size:14px}#tplmsg.ok{color:#1f7a4a}#tplmsg.err{color:#b3261e}
+.fine{font-size:13px;color:var(--muted);margin:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px}
 @media (prefers-reduced-motion:reduce){.who i{animation:none}}
 @media (max-width:560px){.way{flex-direction:column;gap:8px}}
 </style></head>
@@ -59,14 +80,14 @@ footer{color:var(--muted);font-size:13px;margin-top:44px}footer a{color:inherit}
   <div class="who"><i style="background-image:url(/px/anims/walk_theo_down.png)"></i><span>Theo<small>campaigns</small></span></div>
 </div>
 <main>
-<a class="back" href="/">← Lifecycle Practice</a>
+<a target="_blank" rel="noopener" class="back" href="/">← Lifecycle Practice</a>
 <h1>Help build Lifecycle Practice</h1>
 <p class="lede">These are free games that teach the judgment calls of lifecycle marketing. They get better when people who do the job put their experience into them. Pick whatever fits the time you have. Most of these need no coding.</p>
 
 <div class="ways">
   <div class="way"><span class="face"><img src="/px/sprites/face_dana_smile.png" alt=""><span class="n">1</span></span><div><h3>Tell me what you think</h3><span class="t">5 minutes · no account</span>
     <p>Play any part of the game and press <b>Make a suggestion</b> (top right). Pick Bug, Feature idea or Feedback and write a line or two. It goes straight to the list of open issues. "This step confused me" helps as much as a bug report.</p>
-    <a class="go" href="/office/">Play the game →</a></div></div>
+    <a target="_blank" rel="noopener" class="go" href="/office/">Play the game →</a></div></div>
 
   <div class="way"><span class="face"><img src="/px/sprites/face_frank_calm.png" alt=""><span class="n">2</span></span><div><h3>Talk it through with me</h3><span class="t">15 to 30 minutes · a DM or a Zoom call</span>
     <p>The best levels come from real work. If any of these sound like you, message me:</p>
@@ -74,37 +95,62 @@ footer{color:var(--muted);font-size:13px;margin-top:44px}footer a{color:inherit}
       <li>You found something clever at work: a segment, a test setup, a report that saves you time every day.</li>
       <li>You want to teach this, or you're learning it and know what was hard.</li></ul>
     <p>We talk it through and I turn it into a level. You get credit in the game, by name or not, your call.</p>
-    <a class="go" href="https://www.linkedin.com/in/brent-barnes-39827622b">Message me on LinkedIn →</a></div></div>
+    <a target="_blank" rel="noopener" class="go" href="https://www.linkedin.com/in/brent-barnes-39827622b">Message me on LinkedIn →</a></div></div>
 
   <div class="way"><span class="face"><img src="/px/sprites/face_mei_smile.png" alt=""><span class="n">3</span></span><div><h3>Send a prompt request</h3><span class="t">15 minutes · no coding</span>
-    <p>Write the prompt you'd give an AI coding agent (Claude Code, Codex, Cursor) to make one change, and say how to check it worked. I read every one and choose whether to run it. If I do, I link the change back to you.</p>
-    <a class="go" href="https://github.com/BrentBarnes/lifecycle-practice/issues/new?template=4-prompt.yml">Send a prompt request →</a></div></div>
+    <p>Describe one change the way you'd ask an AI coding agent (Claude Code, Codex, Cursor) to make it, and say how to check it worked. I read every one and choose whether to run it. If I do, I link the change back to you.</p>
+    <div class="acts"><button type="button" class="go btn" id="tplbtn" aria-expanded="false" aria-controls="tpl">Fill in the prompt template</button><a target="_blank" rel="noopener" class="go" href="https://github.com/BrentBarnes/lifecycle-practice/issues/new?template=4-prompt.yml">Or write it on GitHub →</a></div>
+    <form id="tpl" class="tpl" hidden autocomplete="off">
+      <fieldset><legend>What kind of change is it?</legend><div class="chips" data-group="kind">
+        <label><input type="radio" name="kind" value="a new level or step">A new level or step</label>
+        <label><input type="radio" name="kind" value="a fix for something broken">A bug fix</label>
+        <label><input type="radio" name="kind" value="a change to an existing step">A change to a step</label>
+        <label><input type="radio" name="kind" value="a skill the game doesn't teach yet">A missing skill</label>
+        <label><input type="radio" name="kind" value="a new game mode">A new game mode</label>
+        <label><input type="radio" name="kind" value="other">Other</label></div>
+        <input type="text" name="kind_other" class="other" placeholder="What kind of change?" maxlength="120" hidden></fieldset>
+      <fieldset><legend>Where does it live?</legend><div class="chips" data-group="where">
+        <label><input type="radio" name="where" value="Analytics: Lifecycle Files, the dashboard wall">Analytics <small>Lifecycle Files</small></label>
+        <label><input type="radio" name="where" value="Data: SQL at Frank's desk">Data <small>SQL</small></label>
+        <label><input type="radio" name="where" value="Testing: the Test Board">Testing <small>Test Board</small></label>
+        <label><input type="radio" name="where" value="the office itself (the room, days, roles)">The office <small>the room, days, roles</small></label>
+        <label><input type="radio" name="where" value="other">Other</label></div>
+        <input type="text" name="where_other" class="other" placeholder="Where should it live?" maxlength="120" hidden></fieldset>
+      <label class="fld"><span>Which level, step or skill? <small>optional</small></span><input type="text" name="spot" maxlength="160" placeholder="Level 2, step 3 · the GROUP BY lesson · reading a holdout"></label>
+      <label class="fld"><span>What should change?</span><textarea name="what" rows="4" maxlength="3000" placeholder="Add a step after 2s3 where the change log has two changes on the same day, and the player picks the one that touched the email that dropped."></textarea></label>
+      <label class="fld"><span>Why? What would a player learn, or stop getting stuck on? <small>optional</small></span><textarea name="why" rows="2" maxlength="1500" placeholder="At work, two changes often ship the same day. Players never practise telling them apart."></textarea></label>
+      <label class="fld"><span>How will we know it worked?</span><textarea name="check" rows="2" maxlength="1500" placeholder="The new step shows after 2s3. Its reps pass after 4 of the last 5 right."></textarea></label>
+      <label class="fld"><span>Your name or GitHub @handle <small>optional, shown publicly</small></span><input type="text" name="who" maxlength="80"></label>
+      <input class="hp" type="text" name="hp" tabindex="-1" aria-hidden="true">
+      <details><summary>Preview the prompt</summary><pre id="tplout"></pre></details>
+      <div class="acts"><button type="submit" class="btn primary" id="tplgo" disabled>Send prompt request</button><button type="button" class="btn" id="tplcopy">Copy the prompt</button><span id="tplmsg" role="status"></span></div>
+      <p class="fine">It goes to the public issue list, where anyone can read it. No GitHub account needed. Please leave out anything private.</p>
+    </form></div></div>
 
   <div class="way"><span class="face"><img src="/px/sprites/face_theo_smile.png" alt=""><span class="n">4</span></span><div><h3>Build it yourself</h3><span class="t">an evening or a weekend · GitHub</span>
     <p>Fork the repo and build a new level, a new step, a fix or a whole game mode. Then open a pull request that says what you built and includes a <b>review link</b> (below), so I can try it in one click.</p>
-    <p>Building with an AI agent? Point it at <a href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code>AGENTS.md</code></a> first. It has the layout, the rules and what to hand back.</p>
-    <a class="go" href="https://github.com/BrentBarnes/lifecycle-practice">Fork it on GitHub →</a></div></div>
+    <p>Building with an AI agent? Point it at <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code>AGENTS.md</code></a> first. It has the layout, the rules and what to hand back.</p>
+    <a target="_blank" rel="noopener" class="go" href="https://github.com/BrentBarnes/lifecycle-practice">Fork it on GitHub →</a></div></div>
 </div>
 
 <h2>What's being built next</h2>
-<p>The <a href="https://github.com/users/BrentBarnes/projects/4">project board</a> shows what's up next and what's in progress. Anything in <b>Up next</b> is open to pick up. Say so in the issue first so two people don't build the same thing. Issues marked <a href="https://github.com/BrentBarnes/lifecycle-practice/labels/good%20first%20issue">good first issue</a> are small on purpose.</p>
+<p>The <a target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">project board</a> shows what's up next and what's in progress. Anything in <b>Up next</b> is open to pick up. Say so in the issue first so two people don't build the same thing. Issues marked <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/labels/good%20first%20issue">good first issue</a> are small on purpose.</p>
 
 <h2>Run it on your computer</h2>
 <p>There's nothing to install and no build step. You need Python 3 (or any static web server):</p>
 <pre>git clone https://github.com/YOUR-NAME/lifecycle-practice
 cd lifecycle-practice
 python3 -m http.server 8000</pre>
-<p>Then open <a href="http://localhost:8000">http://localhost:8000</a>. Reload the page to see a change.</p>
+<p>Then open <a target="_blank" rel="noopener" href="http://localhost:8000">http://localhost:8000</a>. Reload the page to see a change.</p>
 
 <h2>Review links</h2>
-<p>A review link opens the game right at the thing you changed. Put one in every pull request. They use a separate practice save, so they never touch anyone's progress.</p>
+<p>A review link is a full web address that opens the game right at the thing you changed, so the reviewer clicks once and is there. Put one in every pull request, written out in full. If you build with an AI agent, it writes these for you (AGENTS.md tells it how). Review links use a separate practice save, so they never touch anyone's progress. Try these:</p>
 <div class="tablewrap"><table>
-<tr><th>What you changed</th><th>Link</th></tr>
-<tr><td>A lesson in the office (any desk)</td><td><code>/office/?dev&amp;try=data:where</code><br>Roles: <code>analytics</code>, <code>data</code>, <code>testing</code>. Lesson ids are in <code>office/days.mjs</code>.</td></tr>
-<tr><td>A Lifecycle Files step</td><td><code>/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev</code></td></tr>
-<tr><td>A Test Board unit</td><td><code>/test-board/?embed=U2a&amp;save=office-dev</code></td></tr>
+<tr><th>What you changed</th><th>Review link</th></tr>
+<tr><td>A lesson in the office (any desk)</td><td><a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where">https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where</a></td></tr>
+<tr><td>A Lifecycle Files step</td><td><a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev">https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev</a></td></tr>
+<tr><td>A Test Board unit</td><td><a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev">https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev</a></td></tr>
 </table></div>
-<p>To leave the practice save in the office afterward, open <code>/office/?dev=0</code>.</p>
 
 <h2>The rules every change follows</h2>
 <ul>
@@ -115,9 +161,63 @@ python3 -m http.server 8000</pre>
   <li>No AI calls and no accounts. The game runs entirely in the browser.</li>
   <li>Plain words, short sentences.</li>
 </ul>
-<p>More detail is in <a href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+<p>More detail is in <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
 
-<footer>Made-up numbers. Fernhill Coffee Co. is a made-up store. MIT license. Made by Brent Barnes. <a href="https://github.com/BrentBarnes/lifecycle-practice">Source on GitHub</a>.</footer>
+<footer>Made-up numbers. Fernhill Coffee Co. is a made-up store. MIT license. Made by Brent Barnes. <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice">Source on GitHub</a>.</footer>
 </main>
 <script type="module" src="/shared/site.mjs"></script>
+<script>
+// The prompt template: the player fills in a few fields, sees the prompt it builds, and sends it as a "Prompt request"
+// issue through the site's /api/feedback (no GitHub account), or opens GitHub's own form with the fields filled in.
+(() => {
+  const REPO = "BrentBarnes/lifecycle-practice", f = document.getElementById("tpl"), btn = document.getElementById("tplbtn");
+  const out = document.getElementById("tplout"), go = document.getElementById("tplgo"), msg = document.getElementById("tplmsg");
+  const val = (n) => (f.elements[n] && f.elements[n].value || "").trim();
+  const pick = (n) => { const v = val(n); return v === "other" ? val(n + "_other") : v; };
+  const say = (t, cls, html) => { msg.className = cls || ""; msg[html ? "innerHTML" : "textContent"] = t; };
+  btn.onclick = () => { f.hidden = !f.hidden; btn.setAttribute("aria-expanded", String(!f.hidden)); btn.textContent = f.hidden ? "Fill in the prompt template" : "Hide the template"; if (!f.hidden) f.querySelector("input").focus(); };
+  function prompt() {
+    const kind = pick("kind"), where = pick("where"), spot = val("spot");
+    return [
+      "You're working on Lifecycle Practice (https://github.com/" + REPO + "). Read AGENTS.md first and follow its rules.",
+      "",
+      "The change: " + (kind || "[what kind of change]") + (where ? ", in " + where : "") + (spot ? ", at " + spot : "") + ".",
+      "What to do: " + (val("what") || "[what should change]"),
+      val("why") ? "Why it matters: " + val("why") : null,
+      "Done when: " + (val("check") || "[how to check it worked]"),
+      "",
+      "Hand back what you built, a full review link that opens the game right at the change, and how to check it.",
+    ].filter((l) => l !== null).join("\n");
+  }
+  const ready = () => pick("kind") && pick("where") && val("what").length >= 10 && val("check").length >= 5;
+  function refresh() {
+    f.querySelectorAll(".other").forEach((o) => { o.hidden = val(o.name.replace("_other", "")) !== "other"; });
+    out.textContent = prompt(); go.disabled = !ready();
+  }
+  f.addEventListener("input", refresh); f.addEventListener("change", refresh); refresh();
+  const title = () => "Prompt request · " + (pick("where").split(":")[0] || "Lifecycle Practice") + ": " + val("what").replace(/\s+/g, " ").slice(0, 70);
+  const body = () => ["**Kind:** " + pick("kind"), "**Where:** " + pick("where"), val("spot") && "**Which level, step or skill:** " + val("spot"),
+    "**What should change**\n\n" + val("what"), val("why") && "**Why**\n\n" + val("why"), "**How to check it worked**\n\n" + val("check"),
+    val("who") && "From: " + val("who"), "**The prompt**\n\n~~~\n" + prompt().replace(/~{3,}/g, "~ ~ ~") + "\n~~~"].filter(Boolean).join("\n\n");
+  const ghUrl = () => "https://github.com/" + REPO + "/issues/new?" + new URLSearchParams({ template: "4-prompt.yml", title: title(),
+    change: val("what").split("\n")[0].slice(0, 200), prompt: prompt(), check: val("check") });
+  document.getElementById("tplcopy").onclick = () => navigator.clipboard.writeText(prompt()).then(() => say("Copied. Paste it into your AI agent, or send it here."), () => say("Your browser blocked copying. Select the preview text instead.", "err"));
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    if (val("hp") || !ready()) return;
+    go.disabled = true; go.textContent = "Sending…"; say("");
+    try {
+      const r = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "prompt", title: title(), body: body() }) });
+      const j = /json/.test(r.headers.get("content-type") || "") ? await r.json() : null;
+      if (!r.ok || !j || !j.url) throw new Error((j && j.error) || "no server");
+      f.querySelectorAll("input, textarea").forEach((x) => { x.disabled = true; });
+      go.textContent = "Sent ✓";
+      say('Sent. Thank you! <a target="_blank" rel="noopener" href="' + j.url + '">See it on GitHub (#' + j.number + ")</a>", "ok", true);
+    } catch (err) {
+      go.textContent = "Send prompt request"; go.disabled = false;
+      say("It couldn't send from here. " + '<a target="_blank" rel="noopener" href="' + ghUrl().replace(/"/g, "&quot;") + '">Open it on GitHub with your answers filled in</a> (needs a free account), or copy the prompt.', "err", true);
+    }
+  };
+})();
+</script>
 </body></html>

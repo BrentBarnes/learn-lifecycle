@@ -1,6 +1,6 @@
 **What I built** (one change per pull request, two or three plain sentences):
 
-**Review link** (opens the game right at the change, see AGENTS.md for the patterns):
+**Review link** (the full URL, so it's clickable. It opens the game right at the change. See AGENTS.md for the patterns):
 
 **How to check it works** (what to do on that screen, and what should happen):
 

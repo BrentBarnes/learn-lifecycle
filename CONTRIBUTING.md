@@ -31,8 +31,8 @@ A good prompt request:
 ## 4. Send a pull request
 
 Fork the repo, make the change, and open a pull request. Keep it to one change per pull request. The template asks for
-three things: **what you built**, a **review link** that opens the game right at your change, and **how to check it
-works**. [AGENTS.md](AGENTS.md) lists the review link patterns. If you build with an AI agent, point it at AGENTS.md
+three things: **what you built**, a **review link** (a full URL, so it's clickable) that opens the game right at your
+change, and **how to check it works**. [AGENTS.md](AGENTS.md) lists the review link patterns. If you build with an AI agent, point it at AGENTS.md
 first. It has the layout, the rules and what to hand back.
 
 To find something to work on, see the [project board](https://github.com/users/BrentBarnes/projects/4). Anything in
