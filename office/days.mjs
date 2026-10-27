@@ -1,7 +1,7 @@
 // The office's three tracks (CURRICULUM.md, "Roles and tracks"). You're hired for one, two or all three roles and
 // clock in or out at the time clock. Each workday, every desk you're clocked in for serves the next lesson you
 // haven't passed on its own track, so the tracks move at their own pace: Analytics (the dashboard wall, Lifecycle
-// Files), Data (Frank's desk, SQL in SQL Gauntlet's order, sql.mjs) and Testing (the test board, Test Board).
+// Files), Data (Frank's desk, SQL by SQL-CURRICULUM.md, sql.mjs; each unit's case gates the next) and Testing (the test board, Test Board).
 // The dashboard wall and the test board are the real games in a frame, on the office's own save.
 import { UNITS as TBU, STEPS as TBS } from "../test-board/engine.mjs";
 import { UNITS7, STEPS7 } from "../test-board/health.mjs";
@@ -34,7 +34,7 @@ export const TRACKS = {
   analytics: { role: "Analytics", desk: "dash", where: "Dashboard wall", game: "Lifecycle Files", does: "Read the dashboards and say what happened.",
     lessons: Object.entries(LF).flatMap(([group, ls]) => ls.map(([id, title]) => ({ id, title, group }))) },
   data: { role: "Data", desk: "sql", where: "Frank's desk", game: "SQL", does: "Pull the numbers with SQL.",
-    lessons: [...PARTS.map((p) => ({ id: p.id, title: p.name, group: "SQL" })), ...LATER.map((t) => ({ id: null, title: t, group: "Coming" }))] },
+    lessons: [...PARTS.map((p) => ({ id: p.id, title: p.name, group: p.group })), ...LATER.map((t) => ({ id: null, title: t, group: "Coming" }))] },
   testing: { role: "Testing", desk: "board", where: "Test board", game: "Test Board", does: "Plan, size and read A/B tests in GrowthBook.",
     lessons: TB_GROUPS.flatMap(([group, ids]) => ids.map((id) => ({ id, title: TB_UNITS[id].name, group }))) },
 };
