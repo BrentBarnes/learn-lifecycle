@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Help build Lifecycle Practice</title><link rel="icon" href="/px/sprites/face_dana_smile.png">
-<meta name="description" content="Help build Lifecycle Practice, free games that teach lifecycle and email marketing. Bring a story, an idea, an afternoon or a weekend. Most ways in need no coding.">
+<title>Help build Learn Lifecycle</title><link rel="icon" href="/px/sprites/face_dana_smile.png">
+<meta name="description" content="Help build Learn Lifecycle, free games that teach lifecycle and email marketing. Bring a story, an idea, an afternoon or a weekend. Most ways in need no coding.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Silkscreen&family=Caveat:wght@600&display=swap" rel="stylesheet">
 <style>
@@ -112,6 +112,14 @@ section{padding:72px 0 0}
 .credit{display:inline-block;margin-top:10px;font:600 22px/1 Caveat,cursive;color:var(--crema);transform:rotate(-3deg)}
 
 /* what's next */
+.tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:30px}
+.track{display:grid;grid-template-columns:56px minmax(0,1fr);gap:16px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);color:var(--ink);text-decoration:none;transition:transform .15s,box-shadow .15s,border-color .15s}
+.track.wide{grid-column:1/-1}
+.track:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.track img{width:56px;height:56px;border-radius:14px;background:var(--bg2)}
+.track h3{font-size:17.5px;font-weight:800;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.track p{margin:6px 0 0;color:var(--ink2);font-size:15px}
+.track .start{display:block;margin-top:10px;font-size:14px;font-weight:700;color:var(--accent)}
 .board{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;margin-top:28px;padding:26px 28px;border-radius:20px;color:var(--ink);
   background:repeating-linear-gradient(45deg,transparent 0 12px,color-mix(in srgb,var(--crema) 7%,transparent) 12px 24px),var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
 .board p{margin:6px 0 0;color:var(--ink2)}
@@ -178,7 +186,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
   .stats{grid-template-columns:repeat(2,1fr)}.stats div:nth-child(3){border-left:0}.stats div:nth-child(n+3){border-top:1px solid var(--line)}
   .flow{grid-template-columns:1fr;gap:28px}.flow::before{display:none}
   .grid2,.rules{grid-template-columns:1fr}
-  .board{grid-template-columns:1fr}
+  .board{grid-template-columns:1fr}.tracks{grid-template-columns:1fr}
   .links a{grid-template-columns:1fr auto}.links b{grid-column:1/-1}
 }
 @media (max-width:560px){
@@ -207,15 +215,15 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
 
 <div class="wrap">
 <header class="top">
-  <a class="brand" target="_blank" rel="noopener" href="/"><img class="px" src="/px/sprites/face_dana_smile.png" alt="">Lifecycle Practice</a>
-  <nav><a target="_blank" rel="noopener" href="/office/">Play</a><a target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">What's next</a><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice">GitHub</a></nav>
+  <a class="brand" target="_blank" rel="noopener" href="/"><img class="px" src="/px/sprites/face_dana_smile.png" alt="">Learn Lifecycle</a>
+  <nav><a target="_blank" rel="noopener" href="/office/">Play</a><a target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">What's next</a><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle">GitHub</a></nav>
 </header>
 
 <div class="hero">
   <div>
     <p class="kick rise">Open source · free for everyone</p>
     <h1 class="rise d1">Put what you know <em>into the game.</em></h1>
-    <p class="lede rise d2">Lifecycle Practice teaches the judgment calls of lifecycle marketing on screens built like the real tools. The best lessons come from people who do the job. Bring a story, an idea, an afternoon or a weekend.</p>
+    <p class="lede rise d2">Learn Lifecycle teaches the judgment calls of lifecycle marketing on screens built like the real tools. The best lessons come from people who do the job. Bring a story, an idea, an afternoon or a weekend.</p>
     <div class="cta rise d2"><button type="button" class="btn primary" data-goto="ways">Find your way in ↓</button><a class="btn" target="_blank" rel="noopener" href="/office/">Play the game</a></div>
   </div>
   <div class="scene rise d1">
@@ -258,7 +266,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
       <h3>Send a prompt request</h3>
       <div class="meta"><span class="beans" title="Effort: 2 of 4" aria-label="Effort: 2 of 4"><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg><svg class="off"><use href="#bean"/></svg></span><span>15 minutes</span><span class="chip">No coding</span></div>
       <p>Describe one change the way you'd ask an AI coding agent (Claude Code, Codex, Cursor) to make it. I read every one and choose whether to run it. If I do, I link the change back to you.</p>
-      <div class="acts"><button type="button" class="btn sm primary" id="tplbtn" aria-expanded="false" aria-controls="tpl">Fill in the prompt template</button><a class="textlink" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/new?template=4-prompt.yml">or write it on GitHub →</a></div>
+      <div class="acts"><button type="button" class="btn sm primary" id="tplbtn" aria-expanded="false" aria-controls="tpl">Fill in the prompt template</button><a class="textlink" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/new?template=4-prompt.yml">or write it on GitHub →</a></div>
     <form id="tpl" class="tpl" hidden autocomplete="off">
       <div id="tplq" style="display:contents"></div>
       <label class="fld"><span>Your name or GitHub @handle <small>shown publicly</small></span><input type="text" name="who" maxlength="80"></label>
@@ -272,8 +280,8 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
       <h3>Build it yourself</h3>
       <div class="meta"><span class="beans" title="Effort: 4 of 4" aria-label="Effort: 4 of 4"><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg><svg><use href="#bean"/></svg></span><span>An evening or a weekend</span><span class="chip">GitHub</span></div>
       <p>Fork the repo and build a new level, a new step, a fix or a whole game mode. Then open a pull request that says what you built, with a <b>review link</b> that opens the game right at your change.</p>
-      <p>Building with an AI agent? Point it at <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> first. It knows the layout, the rules and what to hand back.</p>
-      <div class="acts"><a class="btn sm primary" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/fork">Fork it on GitHub →</a><a class="textlink" href="#builders" data-goto="builders">Builder's notes ↓</a></div>
+      <p>Building with an AI agent? Point it at <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> first. It knows the layout, the rules and what to hand back.</p>
+      <div class="acts"><a class="btn sm primary" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/fork">Fork it on GitHub →</a><a class="textlink" href="#builders" data-goto="builders">Builder's notes ↓</a></div>
     </div></article>
   </div>
 </section>
@@ -289,10 +297,28 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
   </div>
 </section>
 
-<section>
-  <p class="kick">What's being built next</p>
+<section id="help">
+  <p class="kick">Where to help</p>
+  <h2>Seven things the game needs.</h2>
+  <p class="sub">Each one opens a list of small, clear pieces. Pick one, say so in a comment, and go. You don't need to be a developer: plenty of these need a marketer's eye, a sketch or an idea.</p>
+  <div class="tracks">
+    <a class="track wide" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/36"><img class="px" src="/px/sprites/face_kelsey_smile.png" alt=""><div>
+      <h3>Play it and tell us if it works <span class="chip">No code</span><span class="chip">Easiest way in</span></h3><p>Play a desk with fresh eyes and say where you got stuck. Help us check that what players learn holds up on a real job.</p><span class="start">A good first piece: Playtest a desk for 30 minutes</span></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/19"><img class="px" src="/px/sprites/face_mei_smile.png" alt=""><div>
+      <h3>Make the desks feel great <span class="chip">Needed most</span></h3><p>Sitting down at a desk should feel like part of the game. Layout, flow and what goes where on each screen.</p><span class="start">A good first piece: Pop-up, full screen, or something else?</span></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/9"><img class="px" src="/px/sprites/face_dana_smile.png" alt=""><div>
+      <h3>Make the lessons teach better <span class="chip">Great for marketers</span></h3><p>Clear steps, varied practice, nothing assumed. So a player can do the real job after.</p><span class="start">A good first piece: List what a desk assumes you know</span></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/14"><img class="px" src="/px/sprites/face_theo_smile.png" alt=""><div>
+      <h3>Turn practice into play</h3><p>Borrow from any game you love. Build a small game mode that still teaches the real skill.</p></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/24"><img class="px" src="/px/sprites/face_frank_serious.png" alt=""><div>
+      <h3>Art and each desk's theme</h3><p>Frank thinks he's a detective. The other desks need a character and a look too.</p><span class="start">A good first piece: Pitch a theme for the test board</span></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/28"><img class="px" src="/px/sprites/face_priya_smile.png" alt=""><div>
+      <h3>Shape the story <span class="chip">No code</span></h3><p>Who are these people, and how does the work change them? Brainstorm only.</p><span class="start">A good first piece: Pick a character, sketch their arc</span></div></a>
+    <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/issues/31"><img class="px" src="/px/sprites/face_you_smile.png" alt=""><div>
+      <h3>Smooth the rough edges <span class="chip">Small first fixes</span></h3><p>Hard-to-read text, screens that break on a phone, slow loading.</p><span class="start">A good first piece: Check every screen on your phone</span></div></a>
+  </div>
   <div class="board">
-    <div><h3>Pick something off the board.</h3><p>Anything in <b>Up next</b> is open to pick up. Say so in the issue first, so two people don't build the same thing. Issues marked <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/labels/good%20first%20issue">good first issue</a> are small on purpose.</p></div>
+    <div><h3>Want something small?</h3><p>Pieces marked <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/labels/good%20first%20issue">good first issue</a> take an evening or less. Pieces marked <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/labels/no%20code%20needed">no code needed</a> need only your eyes and your opinion. Everything is on the project board too.</p></div>
     <a class="btn primary" target="_blank" rel="noopener" href="https://github.com/users/BrentBarnes/projects/4">Open the project board →</a>
   </div>
 </section>
@@ -304,14 +330,14 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
     <div class="panel">
       <h3>Run it on your computer</h3>
       <p>Nothing to install, no build step. You need Python 3 or any static web server.</p>
-      <div class="term"><button type="button" class="copy" data-copy="run">Copy</button><code id="run">git clone https://github.com/YOUR-NAME/lifecycle-practice
-cd lifecycle-practice
+      <div class="term"><button type="button" class="copy" data-copy="run">Copy</button><code id="run">git clone https://github.com/YOUR-NAME/learn-lifecycle
+cd learn-lifecycle
 python3 -m http.server 8000</code></div>
       <p>Then open <a target="_blank" rel="noopener" href="http://localhost:8000">http://localhost:8000</a> and reload to see each change.</p>
     </div>
     <div class="panel">
       <h3>Building with an AI agent</h3>
-      <p>Tell your agent to read <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> before it touches anything. It covers where everything lives, the rules below, what to test, and what to put in the pull request, review links included.</p>
+      <p>Tell your agent to read <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/blob/main/AGENTS.md"><code class="inl">AGENTS.md</code></a> before it touches anything. It covers where everything lives, the rules below, what to test, and what to put in the pull request, review links included.</p>
       <div class="term"><button type="button" class="copy" data-copy="ask">Copy</button><code id="ask"><span class="c"># paste into Claude Code, Codex or Cursor</span>
 Read AGENTS.md, then help me build one change.</code></div>
     </div>
@@ -319,9 +345,9 @@ Read AGENTS.md, then help me build one change.</code></div>
       <h3>Review links</h3>
       <p>A review link is a full web address that opens the game right at the thing you changed, so the reviewer clicks once and is there. Put one in every pull request, written out in full. They use a separate practice save, so they never touch anyone's progress. Try these:</p>
       <div class="links">
-        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where"><b>An office lesson</b><code>https://lifecycle-practice.vercel.app/office/?dev&amp;try=data:where</code><span>→</span></a>
-        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev"><b>A Lifecycle Files step</b><code>https://lifecycle-practice.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev</code><span>→</span></a>
-        <a target="_blank" rel="noopener" href="https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev"><b>A Test Board step</b><code>https://lifecycle-practice.vercel.app/test-board/?embed=U2a&amp;save=office-dev</code><span>→</span></a>
+        <a target="_blank" rel="noopener" href="https://learn-lifecycle.vercel.app/office/?dev&amp;try=data:where"><b>An office lesson</b><code>https://learn-lifecycle.vercel.app/office/?dev&amp;try=data:where</code><span>→</span></a>
+        <a target="_blank" rel="noopener" href="https://learn-lifecycle.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev"><b>A Lifecycle Files step</b><code>https://learn-lifecycle.vercel.app/lifecycle-files/?start=step&amp;step=2s3&amp;profile=office-dev</code><span>→</span></a>
+        <a target="_blank" rel="noopener" href="https://learn-lifecycle.vercel.app/test-board/?embed=U2a&amp;save=office-dev"><b>A Test Board step</b><code>https://learn-lifecycle.vercel.app/test-board/?embed=U2a&amp;save=office-dev</code><span>→</span></a>
       </div>
     </div>
   </div>
@@ -330,7 +356,7 @@ Read AGENTS.md, then help me build one change.</code></div>
 <section>
   <p class="kick">House rules</p>
   <h2>Six rules every change follows.</h2>
-  <p class="sub">They're why the game teaches well. More detail in <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+  <p class="sub">They're why the game teaches well. More detail in <a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
   <div class="rules">
     <div class="rule"><i>01</i><b>One new thing per step</b><span>Teach one idea, practise it alone, then join it with what came before.</span></div>
     <div class="rule"><i>02</i><b>Every screen asks for a call</b><span>No screens that are only reading. The player decides something every time.</span></div>
@@ -351,7 +377,7 @@ Read AGENTS.md, then help me build one change.</code></div>
   </div>
 </div>
 
-<footer><span>Made-up numbers. Fernhill Coffee Co. is a made-up store. MIT license. Made by Brent Barnes.</span><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice">Source on GitHub</a></footer>
+<footer><span>Made-up numbers. Fernhill Coffee Co. is a made-up store. MIT license. Made by Brent Barnes.</span><a target="_blank" rel="noopener" href="https://github.com/BrentBarnes/learn-lifecycle">Source on GitHub</a></footer>
 </div>
 <script type="module" src="/shared/site.mjs"></script>
 <script>

@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Play the game
-    url: https://lifecycle-practice.vercel.app
+    url: https://learn-lifecycle.vercel.app
     about: The suggestion box in the game (top right) works without a GitHub account.

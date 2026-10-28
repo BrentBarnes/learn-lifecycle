@@ -2,7 +2,7 @@
 // The player answers a few questions; only "What should change?" is needed. It builds a prompt for an AI coding agent
 // and the "Prompt request" issue that carries it (api/feedback.js files it with the `prompt` label), or a link to
 // GitHub's own prompt form (.github/ISSUE_TEMPLATE/4-prompt.yml) with the answers filled in.
-export const REPO = "BrentBarnes/lifecycle-practice";
+export const REPO = "BrentBarnes/learn-lifecycle";
 export const CHANGES = [
   ["a new level or step", "A new level or step"], ["a fix for something broken", "A bug fix"], ["a change to an existing step", "A change to a step"],
   ["a skill the game doesn't teach yet", "A missing skill"], ["a new game mode", "A new game mode"],
@@ -40,7 +40,7 @@ export function choose(root, name, key) { const el = root.querySelector(`[name="
 
 export function promptText(a) {
   return [
-    `You're working on Lifecycle Practice (https://github.com/${REPO}). Read AGENTS.md first and follow its rules.`,
+    `You're working on Learn Lifecycle (https://github.com/${REPO}). Read AGENTS.md first and follow its rules.`,
     "",
     (a.kind || a.where || a.spot) ? "The change: " + [a.kind, a.where && "in " + a.where, a.spot && "at " + a.spot].filter(Boolean).join(", ") + "." : null,
     a.link ? `The spot in the game it's about: ${a.link}` : null,
@@ -51,7 +51,7 @@ export function promptText(a) {
     "Hand back what you built, a full review link that opens the game right at the change, and how to check it.",
   ].filter((l) => l !== null).join("\n");
 }
-export const title = (a) => `Prompt request · ${a.where.split(":")[0] || "Lifecycle Practice"}: ${a.what.replace(/\s+/g, " ").slice(0, 70)}`;
+export const title = (a) => `Prompt request · ${a.where.split(":")[0] || "Learn Lifecycle"}: ${a.what.replace(/\s+/g, " ").slice(0, 70)}`;
 export function body(a) {
   return [a.kind && "**Kind:** " + a.kind, a.where && "**Where:** " + a.where, a.spot && "**Which level, step or skill:** " + a.spot,
     "**What should change**\n\n" + a.what, a.why && "**Why**\n\n" + a.why, a.check && "**How to check it worked**\n\n" + a.check,

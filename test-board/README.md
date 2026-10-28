@@ -16,7 +16,7 @@ The path, one screen at a time:
 Each step opens with a short lesson: a picture of the screen, one idea, and a guess before the answer. Then you
 practise on fresh cases until most of your recent calls are right.
 
-It's part of [Lifecycle Practice](../README.md): see the main README to run it. **Ask a question** (sidebar, or the
+It's part of [Learn Lifecycle](../README.md): see the main README to run it. **Ask a question** (sidebar, or the
 T key) copies your question with the step and what's on screen, ready to paste into any AI chat.
 
 ## The math

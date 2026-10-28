@@ -1,11 +1,11 @@
 # Contributing
 
 Thanks for wanting to help. The short version, with links, is on the
-[contribute page](https://lifecycle-practice.vercel.app/contribute/). There are four ways in, from least to most work.
+[contribute page](https://learn-lifecycle.vercel.app/contribute/). There are four ways in, from least to most work.
 
 ## 1. Tell me what you think
 
-Press **Make a suggestion** in the game, or [open an issue](https://github.com/BrentBarnes/lifecycle-practice/issues/new/choose).
+Press **Make a suggestion** in the game, or [open an issue](https://github.com/BrentBarnes/learn-lifecycle/issues/new/choose).
 Bugs, ideas, "this step confused me", and "this part was great" are all useful. For a bug, say which game and which
 step, and what you expected to happen.
 
