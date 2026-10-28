@@ -114,6 +114,7 @@ section{padding:72px 0 0}
 /* what's next */
 .tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:30px}
 .track{display:grid;grid-template-columns:56px minmax(0,1fr);gap:16px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);color:var(--ink);text-decoration:none;transition:transform .15s,box-shadow .15s,border-color .15s}
+.track.wide{grid-column:1/-1}
 .track:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
 .track img{width:56px;height:56px;border-radius:14px;background:var(--bg2)}
 .track h3{font-size:17.5px;font-weight:800;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -298,9 +299,11 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;color:
 
 <section id="help">
   <p class="kick">Where to help</p>
-  <h2>Six things the game needs.</h2>
+  <h2>Seven things the game needs.</h2>
   <p class="sub">Each one opens a list of small, clear pieces. Pick one, say so in a comment, and go. You don't need to be a developer: plenty of these need a marketer's eye, a sketch or an idea.</p>
   <div class="tracks">
+    <a class="track wide" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/36"><img class="px" src="/px/sprites/face_kelsey_smile.png" alt=""><div>
+      <h3>Play it and tell us if it works <span class="chip">No code</span><span class="chip">Easiest way in</span></h3><p>Play a desk with fresh eyes and say where you got stuck. Help us check that what players learn holds up on a real job.</p><span class="start">A good first piece: Playtest a desk for 30 minutes</span></div></a>
     <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/19"><img class="px" src="/px/sprites/face_mei_smile.png" alt=""><div>
       <h3>Make the desks feel great <span class="chip">Needed most</span></h3><p>Sitting down at a desk should feel like part of the game. Layout, flow and what goes where on each screen.</p><span class="start">A good first piece: Pop-up, full screen, or something else?</span></div></a>
     <a class="track" target="_blank" rel="noopener" href="https://github.com/BrentBarnes/lifecycle-practice/issues/9"><img class="px" src="/px/sprites/face_dana_smile.png" alt=""><div>
