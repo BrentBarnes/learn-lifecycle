@@ -2,7 +2,7 @@
 // The player answers a few questions; only "What should change?" is needed. It builds a prompt for an AI coding agent
 // and the "Prompt request" issue that carries it (api/feedback.js files it with the `prompt` label), or a link to
 // GitHub's own prompt form (.github/ISSUE_TEMPLATE/4-prompt.yml) with the answers filled in.
-export const REPO = "BrentBarnes/lifecycle-practice";
+export const REPO = "BrentBarnes/learn-lifecycle";
 export const CHANGES = [
   ["a new level or step", "A new level or step"], ["a fix for something broken", "A bug fix"], ["a change to an existing step", "A change to a step"],
   ["a skill the game doesn't teach yet", "A missing skill"], ["a new game mode", "A new game mode"],

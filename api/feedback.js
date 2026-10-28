@@ -4,7 +4,7 @@
 //
 // Setup (once, in the Vercel project's Environment Variables):
 //   GITHUB_TOKEN  a fine-grained token with "Issues: Read and write" on this one repo, nothing else
-//   GITHUB_REPO   owner/name, e.g. BrentBarnes/lifecycle-practice
+//   GITHUB_REPO   owner/name, e.g. BrentBarnes/learn-lifecycle
 // Without GITHUB_TOKEN it answers 503 and the box shows the GitHub link instead.
 const KINDS = { bug: "Bug", idea: "Feature idea", feedback: "Feedback", other: "Something else", prompt: "Prompt request" };   // prompt: the contribute page's template
 const SEEN = new Map();   // ip -> recent send times: a light brake on floods (per warm instance only)
@@ -12,7 +12,7 @@ const LIMIT = 5, WINDOW_MS = 10 * 60 * 1000;
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-  const token = String(process.env.GITHUB_TOKEN || "").trim(), repo = String(process.env.GITHUB_REPO || "").trim() || "BrentBarnes/lifecycle-practice";
+  const token = String(process.env.GITHUB_TOKEN || "").trim(), repo = String(process.env.GITHUB_REPO || "").trim() || "BrentBarnes/learn-lifecycle";
   if (!token) return res.status(503).json({ error: "not set up on this host" });
   if (!/^[\x21-\x7e]+$/.test(token)) {   // a token is plain ASCII; anything else was pasted by mistake and would crash fetch
     console.error("GITHUB_TOKEN holds characters a GitHub token can't have. Paste the token again in Vercel, then redeploy.");
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
   try {
     r = await fetch(`https://api.github.com/repos/${repo}/issues`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "lifecycle-practice-feedback", "X-GitHub-Api-Version": "2022-11-28" },
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "learn-lifecycle-feedback", "X-GitHub-Api-Version": "2022-11-28" },
       body: JSON.stringify({ title, body: `${text}\n\n_Sent from ${kind === "prompt" ? "a prompt request form" : "the game's suggestion box"} (${KINDS[kind]})._`, labels: kind === "prompt" ? ["prompt"] : ["from-game", kind] }),
     });
   } catch (e) { return res.status(502).json({ error: "GitHub didn't answer" }); }

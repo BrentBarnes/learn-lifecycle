@@ -3,12 +3,12 @@
 Free practice games for lifecycle and email marketers. You learn the judgment calls of the job by making them, on
 screens built like the tools you'd use at work: a flow dashboard, a SQL console and an A/B testing tool.
 
-**Play it:** https://lifecycle-practice.vercel.app (no account, nothing to install)
+**Play it:** https://learn-lifecycle.vercel.app (no account, nothing to install)
 
 ![The Fernhill office](docs/screenshots/office.png)
 
 **Help build it.** The best levels come from people who do the job. Tell me a story from work, send an idea, or build a
-level yourself. [Here's how](https://lifecycle-practice.vercel.app/contribute/).
+level yourself. [Here's how](https://learn-lifecycle.vercel.app/contribute/).
 
 ## What's in it
 
@@ -87,9 +87,9 @@ On any other host, the box opens a prefilled GitHub issue instead.
 ## Suggestions, bugs and help
 
 - **While you play:** press **Make a suggestion** (top right). Pick Bug, Feature idea, Feedback or Something else
-  and write it down. It lands in this repo's [issues](https://github.com/BrentBarnes/lifecycle-practice/issues).
-- **On GitHub:** [open an issue](https://github.com/BrentBarnes/lifecycle-practice/issues/new/choose).
-- **Want to help build it?** Start at the [contribute page](https://lifecycle-practice.vercel.app/contribute/). Details
+  and write it down. It lands in this repo's [issues](https://github.com/BrentBarnes/learn-lifecycle/issues).
+- **On GitHub:** [open an issue](https://github.com/BrentBarnes/learn-lifecycle/issues/new/choose).
+- **Want to help build it?** Start at the [contribute page](https://learn-lifecycle.vercel.app/contribute/). Details
   are in [CONTRIBUTING.md](CONTRIBUTING.md), and AI coding agents should read [AGENTS.md](AGENTS.md) first.
 
 ## What's inside the repo

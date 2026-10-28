@@ -8,7 +8,7 @@
 // Not shown inside the office's frames: the office page has its own. While the page shows an element with
 // data-siteslot (the office's desk headers), the buttons sit inside it instead of floating over the corner.
 import * as T from "./prompt.mjs";   // the prompt request template, shared with the contribute page
-const REPO = "BrentBarnes/lifecycle-practice";
+const REPO = "BrentBarnes/learn-lifecycle";
 const KINDS = [
   { id: "bug", icon: "🐞", name: "Bug", hint: "Something broke or looks wrong", label: "bug", ask: "What happened, and what did you expect?" },
   { id: "idea", icon: "💡", name: "Feature idea", hint: "Something the game should do", label: "idea", ask: "What would you like the game to do?" },
@@ -408,7 +408,7 @@ async function download() {
     cur.onerror = () => no(cur.error);
   }));
   const blob = new Blob([JSON.stringify({ game: "lifecycle-practice", v: 1, saved: new Date().toISOString(), localStorage: ls, files }, null, 1)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `lifecycle-practice-save-${new Date().toISOString().slice(0, 10)}.json`;
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `learn-lifecycle-save-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 async function restore(text) {
