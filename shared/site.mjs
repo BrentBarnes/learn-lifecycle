@@ -413,7 +413,7 @@ async function download() {
 }
 async function restore(text) {
   const s = JSON.parse(text);
-  if (!s || s.game !== "lifecycle-practice" || !s.localStorage) throw new Error("not a Lifecycle Practice save file");
+  if (!s || s.game !== "lifecycle-practice" || !s.localStorage) throw new Error("not a Learn Lifecycle save file");
   for (const [k, v] of Object.entries(s.localStorage)) localStorage.setItem(k, v);
   await idb((db) => new Promise((ok, no) => {
     const tx = db.transaction("FILE_DATA", "readwrite"), st = tx.objectStore("FILE_DATA");

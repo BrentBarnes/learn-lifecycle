@@ -1,6 +1,6 @@
 # Instructions for AI coding agents
 
-You're helping someone contribute to **Lifecycle Practice**: free browser games that teach lifecycle and email
+You're helping someone contribute to **Learn Lifecycle**: free browser games that teach lifecycle and email
 marketing at Fernhill Coffee Co., a made-up coffee brand. Read this whole file before changing anything. People
 contribute four ways ([contribute page](https://lifecycle-practice.vercel.app/contribute/)). This file is for the
 fourth: building a change and sending a pull request.

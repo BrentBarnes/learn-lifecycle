@@ -40,7 +40,7 @@ export function choose(root, name, key) { const el = root.querySelector(`[name="
 
 export function promptText(a) {
   return [
-    `You're working on Lifecycle Practice (https://github.com/${REPO}). Read AGENTS.md first and follow its rules.`,
+    `You're working on Learn Lifecycle (https://github.com/${REPO}). Read AGENTS.md first and follow its rules.`,
     "",
     (a.kind || a.where || a.spot) ? "The change: " + [a.kind, a.where && "in " + a.where, a.spot && "at " + a.spot].filter(Boolean).join(", ") + "." : null,
     a.link ? `The spot in the game it's about: ${a.link}` : null,
@@ -51,7 +51,7 @@ export function promptText(a) {
     "Hand back what you built, a full review link that opens the game right at the change, and how to check it.",
   ].filter((l) => l !== null).join("\n");
 }
-export const title = (a) => `Prompt request · ${a.where.split(":")[0] || "Lifecycle Practice"}: ${a.what.replace(/\s+/g, " ").slice(0, 70)}`;
+export const title = (a) => `Prompt request · ${a.where.split(":")[0] || "Learn Lifecycle"}: ${a.what.replace(/\s+/g, " ").slice(0, 70)}`;
 export function body(a) {
   return [a.kind && "**Kind:** " + a.kind, a.where && "**Where:** " + a.where, a.spot && "**Which level, step or skill:** " + a.spot,
     "**What should change**\n\n" + a.what, a.why && "**Why**\n\n" + a.why, a.check && "**How to check it worked**\n\n" + a.check,

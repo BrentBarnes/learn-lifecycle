@@ -1,4 +1,4 @@
-# Lifecycle Practice
+# Learn Lifecycle
 
 Free practice games for lifecycle and email marketers. You learn the judgment calls of the job by making them, on
 screens built like the tools you'd use at work: a flow dashboard, a SQL console and an A/B testing tool.
