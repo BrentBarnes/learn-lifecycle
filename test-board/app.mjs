@@ -810,15 +810,17 @@ function renderBoard() {
   const c = P.c, W = E.BOARD_WEEKS, kc = c.card, offersOn = c.rules.includes("offers"), ov = c.marked !== undefined;
   if (!c.place) P.ghost = kc.start;
   const m = ov ? c.cards[c.marked] : null;
+  // The hint sits above the board so nothing splits the weeks and bars from the buttons: they all fit on one screen.
   main.innerHTML = hudHTML() + `<div class="card" id="card">
     <div class="crumb">Test board / Oct 26 to Dec 20</div>
     <div class="xh"><h1>${c.place ? "Where does it go?" : ov ? "Do they share a week?" : "Can it run there?"}</h1></div>
     <div class="meta">${ov ? `The new card on ${E.BOARD_ROWS[kc.row]} and the marked test, <b>${m.name}</b> on ${E.BOARD_ROWS[m.row]}.` :
       `New card: <b>${kc.name}</b> · ${E.BOARD_ROWS[kc.row]} · ${c.calc ? `<span id="m-len">length: size it above</span>` : `${kc.len} week${kc.len > 1 ? "s" : ""}`}${offersOn ? ` · <span id="m-kind">${kc.offer ? "offer" : "creative change"}</span>` : ""} · <span id="m-reader">${kc.reader ? "read by " + kc.reader : "no reader named"}</span>${c.place ? (c.past ? ` · today is ${W[c.past]}` : "") : ` · proposed ${W[kc.start]}`}`}</div>
+    ${hintHTML(c)}
     ${c.calc ? `<div class="pane calcpane">${calcHTML(c.calc, { show: ["pw"], idea: kc.name, compact: true, hideSummary: true, hideMark: c.stage > 0 })}</div>` : ""}
     <div class="pane">${boardGrid({ rowSub: c.calc ? ROW_TRAFFIC : null, cards: c.cards, card: c.calc ? { ...kc, len: 1, sub: "? weeks" } : kc, showFreeze: c.showFreeze, marked: c.marked, place: c.place, offers: offersOn, past: c.past }, P.ghost)}
       <div id="gate" class="gatefb"></div></div>
-    ${hintHTML(c)}${c.place ? `<div class="decide" id="decide"><button type="button" class="dec" id="drop"><span class="kbd">Enter</span>Drop it here</button></div>` : c.guided ? `<div class="decide" id="decide"></div>` : decideHTML()}
+    ${c.place ? `<div class="decide" id="decide"><button type="button" class="dec" id="drop"><span class="kbd">Enter</span>Drop it here</button></div>` : c.guided ? `<div class="decide" id="decide"></div>` : decideHTML()}
     ${tailHTML(c.place ? `<span class="kbd">←</span> <span class="kbd">→</span> move the card, <span class="kbd">Enter</span> drop it` : c.guided ? `<span class="kbd">1</span> clear, <span class="kbd">2</span> blocked` : `<span class="kbd">1</span>–<span class="kbd">${P.calls.length}</span> the call`)}`;
   if (TOUCH) $("board").addEventListener("click", (e) => { const t = e.target.closest(".bar"); if (t && t.id !== "ghost") coach(t.title + (t.classList.contains("offer") ? " · offer" : " · creative change")); });
   if (c.place) {
@@ -828,6 +830,8 @@ function renderBoard() {
   } else if (c.guided) { P.gi = 0; P.gok = []; boardGuideShow(); }
   else wireDecide();
   const rl = $("relesson"); if (rl) rl.addEventListener("click", () => lesson(P.unit, true));
+  // The notes above the board come and go between reps, so the page can shift under a player who has scrolled down to it.
+  if (window.scrollY) for (const el of [$("board"), main.querySelector(".hint"), $("decide")]) if (el) el.scrollIntoView({ block: "nearest" });
 }
 // The guided walk on the board (first reps of steps 4 and 6): one check at a time, clear or blocked.
 const GATE_LOOK = { busy: ["Its row", "Look along its own row, in its weeks."], offers: ["Offers", "If it's an offer, look down its weeks for another offer on any row."],
